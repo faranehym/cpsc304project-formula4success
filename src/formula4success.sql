@@ -7,6 +7,15 @@ drop table Partner_2 cascade constraints;
 drop table GrandPrix_Ref cascade constraints; 
 drop table GrandPrix_2 cascade constraints; 
 
+drop table GrandPrix_3 cascade constraints;
+drop table GrandPrix_4 cascade constraints;
+drop table GrandPrix_5 cascade constraints;
+drop table Circuit_Ref cascade constraints;
+drop table Circuit_2 cascade constraints;
+drop table GrandPrix_ConstructorStanding_Ref cascade constraints;
+drop table GrandPrix_ConstructorStanding_2 cascade constraints;
+drop table GrandPrix_DriverStanding_Ref cascade constraints;
+
 -- does this need cascade constraints? 
 drop table GrandPrix_DriverStanding_2 cascade constraints; 
 drop table Driver cascade constraints;  
@@ -17,6 +26,7 @@ drop table InRelationshipWith cascade constraints;
 drop table ConstructorHolds cascade constraints; 
 drop table DriverHolds cascade constraints; 
 
+-- Statements 1-8
 create table Sponsor(
     companyName varchar(40) PRIMARY KEY, 
 	industry    varchar(40)
@@ -45,7 +55,7 @@ create table TeamMember (
 grant select on TeamMember to public;
 
 create table Car (
-	Model				varchar(40)		PRIMARY KEY, 
+	model				varchar(40)		PRIMARY KEY, 
 	engine				varchar(40), 
 	constructorName		varchar(40)		NOT NULL, 
 	FOREIGN KEY (constructorName) REFERENCES Constructor(constructorName)
@@ -87,6 +97,77 @@ create table GrandPrix_2 (
 ); 
 
 grant select on GrandPrix_2 to public;
+
+-- Statements 9-16
+create table GrandPrix_3 (
+	circuitName		varchar(40)		PRIMARY KEY, 
+	country			varchar(40)		NOT NULL,
+	FOREIGN KEY (circuitName) REFERENCES GrandPrix_Ref(circuitName)
+);
+
+grant select on GrandPrix_3 to public;
+
+create table GrandPrix_4 (
+	year				int, 
+	circuitName			varchar(40), 
+	attendance			int,
+	PRIMARY KEY (year, circuitName), 
+	FOREIGN KEY (year, circuitName) REFERENCES GrandPrix_Ref(year, circuitName)
+);
+
+grant select on GrandPrix_4 to public;
+
+create table GrandPrix_5 (
+	year				int, 
+	gpName				varchar(40), 
+	circuitName			varchar(40)		NOT NULL,
+	PRIMARY KEY (year, gpName), 
+	FOREIGN KEY (year, circuitName) REFERENCES GrandPrix_Ref(year, circuitName)
+);
+
+grant select on GrandPrix_5 to public;
+
+create table Circuit_Ref (
+	numberOfLaps		int			PRIMARY KEY, 
+	length				int  	
+);
+
+grant select on Circuit_Ref to public;
+
+create table Circuit_2 (
+	circuitName			varchar(40)		PRIMARY KEY, 
+	numberOfLaps		int, 		
+	type				varchar(40),
+	FOREIGN KEY (numberOfLaps) REFERENCES Circuit_Ref(numberOfLaps)
+		ON DELETE CASCADE
+);
+
+grant select on Circuit_2 to public;
+
+create table GrandPrix_ConstructorStanding_Ref (
+	position			int			PRIMARY KEY, 	
+	points				int			DEFAULT 0 NOT NULL 
+);
+
+grant select on GrandPrix_ConstructorStanding_Ref to public;
+
+create table GrandPrix_ConstructorStanding_2 (
+	position			int, 
+	gpName				varchar(40), 
+	year				int, 
+	PRIMARY KEY (position, gpName, year),
+	FOREIGN KEY (gpName, year) REFERENCES GrandPrix_5(gpName, year),
+	FOREIGN KEY (position) REFERENCES GrandPrix_ConstructorStanding_Ref(position)
+);
+
+grant select on GrandPrix_ConstructorStanding_2 to public;
+
+create table GrandPrix_DriverStanding_Ref (
+	racePosition		int			PRIMARY KEY,	
+	points			 	int			DEFAULT 0 NOT NULL
+);
+
+grant select on GrandPrix_DriverStanding_Ref to public;
 
 -- Statements 17-24
 create table GrandPrix_DriverStanding_2(
@@ -169,6 +250,7 @@ create table DriverHolds (
 		ON DELETE CASCADE
 ); 
 
+-- Statements 1-8
 insert into Sponsor (companyName, industry) values ('Oracle', 'Tech');
 insert into Sponsor (companyName, industry) values ('Zoom', 'Tech');
 insert into Sponsor (companyName, industry) values ('Tommy Hilfiger', 'Apparel');
@@ -251,6 +333,56 @@ insert into GrandPrix_2 (circuitName, city) values ('Albert Park Circuit', 'Melb
 insert into GrandPrix_2 (circuitName, city) values ('Monaco', 'Monte Carlo');
 insert into GrandPrix_2 (circuitName, city) values ('Silverstone Circuit', 'Towcester');
 insert into GrandPrix_2 (circuitName, city) values ('Marina Bay Street Circuit', 'Marina Bay');
+
+-- Statements 9-16
+insert into GrandPrix_3 (circuitName, country) values ('Bahrain International Circuit', 'Bahrain');
+insert into GrandPrix_3 (circuitName, country) values ('Albert Park Circuit', 'Australia');
+insert into GrandPrix_3 (circuitName, country) values ('Monaco', 'Monaco');
+insert into GrandPrix_3 (circuitName, country) values ('Silverstone Circuit', 'England');
+insert into GrandPrix_3 (circuitName, country) values ('Marina Bay Street Circuit', 'Singapore');
+
+insert into GrandPrix_4 (year, circuitName, attendance) values ('2023', 'Bahrain International Circuit', '36000');
+insert into GrandPrix_4 (year, circuitName, attendance) values ('2023', 'Albert Park Circuit', '444600');
+insert into GrandPrix_4 (year, circuitName, attendance) values ('2023', 'Monaco', '200000');
+insert into GrandPrix_4 (year, circuitName, attendance) values ('2023', 'Silverstone Circuit', '480000');
+insert into GrandPrix_4 (year, circuitName, attendance) values ('2023', 'Marina Bay Street Circuit', '264000');
+
+insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Bahrain Grand Prix', 'Bahrain International Circuit');
+insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Australian Grand Prix', 'Albert Park Circuit');
+insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Monaco Grand Prix', 'Monaco');
+insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'British Grand Prix', 'Silverstone Circuit');
+insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Singapore Grand Prix', 'Marina Bay Street Circuit');
+
+insert into Circuit_Ref (numberOfLaps, length) values ('57', '308');
+insert into Circuit_Ref (numberOfLaps, length) values ('58', '307');
+insert into Circuit_Ref (numberOfLaps, length) values ('78', '260');
+insert into Circuit_Ref (numberOfLaps, length) values ('52', '306');
+insert into Circuit_Ref (numberOfLaps, length) values ('61', '308');
+
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Bahrain International Circuit', '57', 'race');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Albert Park Circuit', '58', 'street');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Monaco', '78', 'street');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Silverstone Circuit', '52', 'race');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Marina Bay Street Circuit', '61', 'street');
+
+insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('1', '37');
+insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('2', '30');
+insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('3', '25');
+insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('1', '25');
+insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('2', '27');
+
+insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('1', 'Singapore Grand Prix', '2023');
+insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('2', 'British Grand Prix', '2023');
+insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('3', 'British Grand Prix', '2023');
+insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('1', 'Monaco Grand Prix', '2023');
+insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('2', 'Australian Grand Prix', '2023');
+
+insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('1', '25');
+insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('4', '12');
+insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('2', '18');
+insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('3', '15');
+insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('4', '10');
+insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('16', '0');
 
 -- Statements 17-24
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('1', 'Singapore Grand Prix', '2023', '1'); 
