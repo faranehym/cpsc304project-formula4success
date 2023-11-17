@@ -103,20 +103,20 @@ grant select on Circuit_2 to public;
 -----------------------------------------
 
 create table GrandPrix_Ref (
-	year				int, 
-	circuitName			varchar(40), 
-	viewership			int,
-	PRIMARY KEY (year, circuitName),
+	circuitName			varchar(40) 	PRIMARY KEY, 
+	city				varchar(40)		NOT NULL,
 	FOREIGN KEY (circuitName) REFERENCES Circuit_2(circuitName)
-);
+); 
 
 grant select on GrandPrix_Ref to public;
 
 create table GrandPrix_2 (
-	circuitName			varchar(40) 	PRIMARY KEY, 
-	city				varchar(40)		NOT NULL,
+	year				int, 
+	circuitName			varchar(40), 
+	viewership			int,
+	PRIMARY KEY (year, circuitName),
 	FOREIGN KEY (circuitName) REFERENCES GrandPrix_Ref(circuitName)
-); 
+);
 
 grant select on GrandPrix_2 to public;
 
@@ -134,7 +134,7 @@ create table GrandPrix_4 (
 	circuitName			varchar(40), 
 	attendance			int,
 	PRIMARY KEY (year, circuitName), 
-	FOREIGN KEY (year, circuitName) REFERENCES GrandPrix_Ref(year, circuitName)
+	FOREIGN KEY (year, circuitName) REFERENCES GrandPrix_2(year, circuitName)
 );
 
 grant select on GrandPrix_4 to public;
@@ -144,7 +144,7 @@ create table GrandPrix_5 (
 	gpName				varchar(40), 
 	circuitName			varchar(40)		NOT NULL,
 	PRIMARY KEY (year, gpName), 
-	FOREIGN KEY (year, circuitName) REFERENCES GrandPrix_Ref(year, circuitName)
+	FOREIGN KEY (year, circuitName) REFERENCES GrandPrix_2(year, circuitName)
 );
 
 grant select on GrandPrix_5 to public;
@@ -294,8 +294,8 @@ grant select on DriverHolds to public;
 -- Statements 1-8
 insert into Sponsor (companyName, industry) values ('Oracle', 'Tech');
 insert into Sponsor (companyName, industry) values ('Zoom', 'Tech');
-insert into Sponsor (companyName, industry) values ('Tommy Hilfiger', 'Apparel');
-insert into Sponsor (companyName, industry) values ('Monster Energy', 'Beverage');
+-- insert into Sponsor (companyName, industry) values ('Tommy Hilfiger', 'Apparel');
+-- insert into Sponsor (companyName, industry) values ('Monster Energy', 'Beverage');
 insert into Sponsor (companyName, industry) values ('Ray-Ban', 'Apparel');
 insert into Sponsor (companyName, industry) values ('Shell', 'Oil and Gas');
 insert into Sponsor (companyName, industry) values ('Chrome', 'Tech');
@@ -314,7 +314,7 @@ insert into Constructor (constructorName, nationality, numberOfWins) values ('Ha
 insert into Constructor (constructorName, nationality, numberOfWins) values ('AlphaTauri', 'Italy', '0');
 
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('1', 'Toto', 'Wolff', 'Austria', to_date('1972-01-12', 'YYYY-MM-DD'), '26000000', 'Team Principal');
-insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('2', 'Christian', 'Horner', 'England', to_date('1973-11-16', 'YYYY-MM-DD'), '10000000', 'Team Principal');
+-- insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('2', 'Christian', 'Horner', 'England', to_date('1973-11-16', 'YYYY-MM-DD'), '10000000', 'Team Principal');
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('3', 'Zak', 'Brown', 'United States', to_date('1971-11-07', 'YYYY-MM-DD'), '5000000', 'CEO');
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('4', 'Hannah', 'Schmitz', 'England', to_date('1985-05-01', 'YYYY-MM-DD'), '154000', 'Principal Strategy Engineer');
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('5', 'Peter', 'Bonnington', 'England', to_date('1975-02-12', 'YYYY-MM-DD'), '450000', 'Senior Race Engineer');
@@ -363,17 +363,31 @@ insert into Partner_2 (instagramHandle, instagramFollowers) values ('lilyzneimer
 insert into Partner_2 (instagramHandle, instagramFollowers) values ('tiffanycromwell', '195000');
 insert into Partner_2 (instagramHandle, instagramFollowers) values ('lilymhe', '688000');
 
-insert into GrandPrix_Ref (year, circuitName, viewership) values ('2023', 'Bahrain International Circuit', '1300000');
-insert into GrandPrix_Ref (year, circuitName, viewership) values ('2023', 'Albert Park Circuit', '2950000');
-insert into GrandPrix_Ref (year, circuitName, viewership) values ('2023', 'Monaco', '1790000');
-insert into GrandPrix_Ref (year, circuitName, viewership) values ('2023', 'Silverstone Circuit', '2350000');
-insert into GrandPrix_Ref (year, circuitName, viewership) values ('2023', 'Marina Bay Street Circuit', '1300000');
+-- Moved Circuit insert statements from below to be before GrandPrix_Ref
+insert into Circuit_Ref (numberOfLaps, length) values ('57', '308');
+insert into Circuit_Ref (numberOfLaps, length) values ('58', '307');
+insert into Circuit_Ref (numberOfLaps, length) values ('78', '260');
+insert into Circuit_Ref (numberOfLaps, length) values ('52', '306');
+insert into Circuit_Ref (numberOfLaps, length) values ('61', '308');
 
-insert into GrandPrix_2 (circuitName, city) values ('Bahrain International Circuit', 'Sakhir');
-insert into GrandPrix_2 (circuitName, city) values ('Albert Park Circuit', 'Melbourne')
-insert into GrandPrix_2 (circuitName, city) values ('Monaco', 'Monte Carlo');
-insert into GrandPrix_2 (circuitName, city) values ('Silverstone Circuit', 'Towcester');
-insert into GrandPrix_2 (circuitName, city) values ('Marina Bay Street Circuit', 'Marina Bay');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Bahrain International Circuit', '57', 'race');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Albert Park Circuit', '58', 'street');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Monaco', '78', 'street');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Silverstone Circuit', '52', 'race');
+insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Marina Bay Street Circuit', '61', 'street');
+-----------------------------------
+
+insert into GrandPrix_Ref (circuitName, city) values ('Bahrain International Circuit', 'Sakhir');
+insert into GrandPrix_Ref (circuitName, city) values ('Albert Park Circuit', 'Melbourne')
+insert into GrandPrix_Ref (circuitName, city) values ('Monaco', 'Monte Carlo');
+insert into GrandPrix_Ref (circuitName, city) values ('Silverstone Circuit', 'Towcester');
+insert into GrandPrix_Ref (circuitName, city) values ('Marina Bay Street Circuit', 'Marina Bay');
+
+insert into GrandPrix_2 (year, circuitName, viewership) values ('2023', 'Bahrain International Circuit', '1300000');
+insert into GrandPrix_2 (year, circuitName, viewership) values ('2023', 'Albert Park Circuit', '2950000');
+insert into GrandPrix_2 (year, circuitName, viewership) values ('2023', 'Monaco', '1790000');
+insert into GrandPrix_2 (year, circuitName, viewership) values ('2023', 'Silverstone Circuit', '2350000');
+insert into GrandPrix_2 (year, circuitName, viewership) values ('2023', 'Marina Bay Street Circuit', '1300000');
 
 -- Statements 9-16
 insert into GrandPrix_3 (circuitName, country) values ('Bahrain International Circuit', 'Bahrain');
@@ -393,18 +407,6 @@ insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Australian 
 insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Monaco Grand Prix', 'Monaco');
 insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'British Grand Prix', 'Silverstone Circuit');
 insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Singapore Grand Prix', 'Marina Bay Street Circuit');
-
-insert into Circuit_Ref (numberOfLaps, length) values ('57', '308');
-insert into Circuit_Ref (numberOfLaps, length) values ('58', '307');
-insert into Circuit_Ref (numberOfLaps, length) values ('78', '260');
-insert into Circuit_Ref (numberOfLaps, length) values ('52', '306');
-insert into Circuit_Ref (numberOfLaps, length) values ('61', '308');
-
-insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Bahrain International Circuit', '57', 'race');
-insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Albert Park Circuit', '58', 'street');
-insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Monaco', '78', 'street');
-insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Silverstone Circuit', '52', 'race');
-insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Marina Bay Street Circuit', '61', 'street');
 
 insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('1', '37');
 insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('2', '30');
@@ -426,6 +428,7 @@ insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('4', '10
 insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('16', '0');
 
 -- Statements 17-24
+
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('1', 'Singapore Grand Prix', '2023', '1'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('4', 'Singapore Grand Prix', '2023', '3'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('2', 'British Grand Prix', '2023', '2'); 
@@ -459,15 +462,15 @@ insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, num
 
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Oracle', 'Red Bull Racing', '500000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Zoom', 'Red Bull Racing', '150000000');
-insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Tommy Hilfiger', 'Mercedes', '50000000');
-insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Monster Energy', 'Mercedes', '85000000');
+-- insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Tommy Hilfiger', 'Mercedes', '50000000');
+-- insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Monster Energy', 'Mercedes', '85000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Ray-Ban', 'Ferrari', '290000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Shell', 'Ferrari', '350000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Chrome', 'McLaren', '420000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Michelob Ultra', 'Williams', '41000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Tik Tok', 'Aston Martin', NULL);
 
-insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '2', '2005-01-01'); 
+-- insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '2', '2005-01-01'); 
 insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '1', '2013-01-01');
 insert into WorksWith (constructorName, employeeId, since) values ('McLaren', '3', '2016-11-01'); 
 insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '4', '2009-11-01'); 
