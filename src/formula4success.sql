@@ -80,6 +80,28 @@ create table Partner_2 (
 
 grant select on Partner_2 to public;
 
+-----------------------------------------
+-- Moved Circuit tables from below to be before GrandPrix_Ref
+create table Circuit_Ref (
+	numberOfLaps		int			PRIMARY KEY, 
+	length				int  	
+);
+
+grant select on Circuit_Ref to public;
+
+create table Circuit_2 (
+	circuitName			varchar(40)		PRIMARY KEY, 
+	numberOfLaps		int, 		
+	type				varchar(40),
+	FOREIGN KEY (numberOfLaps) REFERENCES Circuit_Ref(numberOfLaps)
+		ON DELETE CASCADE
+);
+
+grant select on Circuit_2 to public;
+
+-- End of moved section 
+-----------------------------------------
+
 create table GrandPrix_Ref (
 	year				int, 
 	circuitName			varchar(40), 
@@ -127,20 +149,23 @@ create table GrandPrix_5 (
 
 grant select on GrandPrix_5 to public;
 
-create table Circuit_Ref (
-	numberOfLaps		int			PRIMARY KEY, 
-	length				int  	
-);
+-------------
+-- MOVING THESE STATEMENTS TO BE BEFORE GrandPrix_Ref
+-------------
+-- create table Circuit_Ref (
+-- 	numberOfLaps		int			PRIMARY KEY, 
+-- 	length				int  	
+-- );
 
-grant select on Circuit_Ref to public;
+-- grant select on Circuit_Ref to public;
 
-create table Circuit_2 (
-	circuitName			varchar(40)		PRIMARY KEY, 
-	numberOfLaps		int, 		
-	type				varchar(40),
-	FOREIGN KEY (numberOfLaps) REFERENCES Circuit_Ref(numberOfLaps)
-		ON DELETE CASCADE
-);
+-- create table Circuit_2 (
+-- 	circuitName			varchar(40)		PRIMARY KEY, 
+-- 	numberOfLaps		int, 		
+-- 	type				varchar(40),
+-- 	FOREIGN KEY (numberOfLaps) REFERENCES Circuit_Ref(numberOfLaps)
+-- 		ON DELETE CASCADE
+-- );
 
 grant select on Circuit_2 to public;
 
@@ -180,14 +205,18 @@ create table GrandPrix_DriverStanding_2(
 	FOREIGN KEY (racePosition) REFERENCES GrandPrix_DriverStanding_Ref(racePosition)
 );
 
+grant select on GrandPrix_DriverStanding_2 to public;
+
 create table Driver (
 	employeeId			int				PRIMARY KEY, 
-	#OfPodiums			int				DEFAULT 0 NOT NULL, 
-	#OfWins 			int				DEFAULT 0 NOT NULL, 
+	numberOfPodiums		int				DEFAULT 0 NOT NULL, 
+	numberOfWins 			int				DEFAULT 0 NOT NULL, 
 	driverNumber		int 			NOT NULL, 
-	#OfPolePositions 	int				DEFAULT 0 NOT NULL, 
+	numberOfPolePositions 	int				DEFAULT 0 NOT NULL, 
 	FOREIGN KEY (employeeId) REFERENCES TeamMember(employeeId)
 );
+
+grant select on Driver to public;
 
 create table Sponsors (
 	companyName			varchar(40), 
@@ -198,6 +227,8 @@ create table Sponsors (
 	FOREIGN KEY (constructorName) REFERENCES Constructor(constructorName)
 ); 
 
+grant select on Sponsors to public;
+
 create table WorksWith (
 	constructorName 	varchar(40), 
 	employeeId			int, 
@@ -207,6 +238,8 @@ create table WorksWith (
 	FOREIGN KEY (employeeId) REFERENCES TeamMember(employeeId)
 );
 
+grant select on WorksWith to public;
+
 create table Drives (
 	model 				varchar(40), 
 	employeeId			int, 
@@ -214,6 +247,8 @@ create table Drives (
 	FOREIGN KEY (model) REFERENCES Car(model), 
 	FOREIGN KEY (employeeId) REFERENCES Driver(employeeId)
 );
+
+grant select on Drives to public;
 
 create table InRelationshipWith (
 	partnerId			int, 
@@ -226,29 +261,35 @@ create table InRelationshipWith (
 	FOREIGN KEY (employeeId) REFERENCES Driver(employeeId)
 );
 
+grant select on InRelationshipWith to public;
+
 create table ConstructorHolds (
 	position 			int, 
 	gpName				varchar(40), 
 	year				int, 
 	constructorName		varchar(40), 
 	PRIMARY KEY (position, gpName, year, constructorName), 
-	FOREIGN KEY (gpName, year, position) REFERENCES GrandPrix_ConstructorStanding(gpName, year, position)
+	FOREIGN KEY (gpName, year, position) REFERENCES GrandPrix_ConstructorStanding_2(gpName, year, position)
 		ON DELETE CASCADE, 
 	FOREIGN KEY (constructorName) REFERENCES Constructor(constructorName)
 		ON DELETE CASCADE
 ); 
 
+grant select on ConstructorHolds to public;
+
 create table DriverHolds (
 	racePosition		int, 
 	gpName				varchar(40), 
 	year				int, 
-	employeeId			varchar(40),
+	employeeId			int,
 	PRIMARY KEY (racePosition, gpName, year, employeeId), 
 	FOREIGN KEY (gpName, year, racePosition) REFERENCES GrandPrix_DriverStanding_2(gpName, year, racePosition)
 		ON DELETE CASCADE, 
 	FOREIGN KEY (employeeId) REFERENCES Driver(employeeId)
 		ON DELETE CASCADE
 ); 
+
+grant select on DriverHolds to public;
 
 -- Statements 1-8
 insert into Sponsor (companyName, industry) values ('Oracle', 'Tech');
@@ -396,25 +437,25 @@ insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPo
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('3', 'Australian Grand Prix', '2023', '4'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('4', 'Australian Grand Prix', '2023', '6'); 
 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('6', '2', '0', '81', '1'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('7', '0', '0', '2', '0'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('8', '0', '0', '22', '0'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('9', '11', '0', '4', '1'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('10', '0', '0', '24', '0'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('11', '3', '0', '18', '1'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('12', '10', '1', '63', '1'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('13', '27', '5', '16', '19'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('14', '3', '1', '31', '0'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('15', '2', '0', '23', '0'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('16', '4', '1', '10', '0'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('17', '17', '2', '55', '5'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('18', '1', '0', '20', '1'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('19', '34', '6', '11', '3'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('20', '67', '10', '77', '20'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('21', '0', '0', '27', '1'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('22', '196', '103', '44', '104'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('23', '93', '49', '1', '30'); 
-insert into Driver (employeeId, #OfPodiums, #OfWins, driverNumber, #OfPolePositions) values ('24', '105', '32', '14', '22'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('6', '2', '0', '81', '1'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('7', '0', '0', '2', '0'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('8', '0', '0', '22', '0'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('9', '11', '0', '4', '1'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('10', '0', '0', '24', '0'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('11', '3', '0', '18', '1'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('12', '10', '1', '63', '1'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('13', '27', '5', '16', '19'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('14', '3', '1', '31', '0'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('15', '2', '0', '23', '0'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('16', '4', '1', '10', '0'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('17', '17', '2', '55', '5'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('18', '1', '0', '20', '1'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('19', '34', '6', '11', '3'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('20', '67', '10', '77', '20'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('21', '0', '0', '27', '1'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('22', '196', '103', '44', '104'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('23', '93', '49', '1', '30'); 
+insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, numberOfPolePositions) values ('24', '105', '32', '14', '22'); 
 
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Oracle', 'Red Bull Racing', '500000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Zoom', 'Red Bull Racing', '150000000');
