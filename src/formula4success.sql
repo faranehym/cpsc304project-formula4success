@@ -254,8 +254,6 @@ create table InRelationshipWith (
 	partnerId			int, 
 	employeeId			int, 
 	since				date, 
-	instagramHandle 	varchar(40), 
-	instagramFollowers	int, 
 	PRIMARY KEY (partnerId, employeeId), 
 	FOREIGN KEY (partnerId) REFERENCES Partner_Ref(partnerId), 
 	FOREIGN KEY (employeeId) REFERENCES Driver(employeeId)
@@ -294,8 +292,8 @@ grant select on DriverHolds to public;
 -- Statements 1-8
 insert into Sponsor (companyName, industry) values ('Oracle', 'Tech');
 insert into Sponsor (companyName, industry) values ('Zoom', 'Tech');
--- insert into Sponsor (companyName, industry) values ('Tommy Hilfiger', 'Apparel');
--- insert into Sponsor (companyName, industry) values ('Monster Energy', 'Beverage');
+insert into Sponsor (companyName, industry) values ('Tommy Hilfiger', 'Apparel');
+insert into Sponsor (companyName, industry) values ('Monster Energy', 'Beverage');
 insert into Sponsor (companyName, industry) values ('Ray-Ban', 'Apparel');
 insert into Sponsor (companyName, industry) values ('Shell', 'Oil and Gas');
 insert into Sponsor (companyName, industry) values ('Chrome', 'Tech');
@@ -314,7 +312,7 @@ insert into Constructor (constructorName, nationality, numberOfWins) values ('Ha
 insert into Constructor (constructorName, nationality, numberOfWins) values ('AlphaTauri', 'Italy', '0');
 
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('1', 'Toto', 'Wolff', 'Austria', to_date('1972-01-12', 'YYYY-MM-DD'), '26000000', 'Team Principal');
--- insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('2', 'Christian', 'Horner', 'England', to_date('1973-11-16', 'YYYY-MM-DD'), '10000000', 'Team Principal');
+insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('2', 'Christian', 'Horner', 'England', to_date('1973-11-16', 'YYYY-MM-DD'), '10000000', 'Team Principal');
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('3', 'Zak', 'Brown', 'United States', to_date('1971-11-07', 'YYYY-MM-DD'), '5000000', 'CEO');
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('4', 'Hannah', 'Schmitz', 'England', to_date('1985-05-01', 'YYYY-MM-DD'), '154000', 'Principal Strategy Engineer');
 insert into TeamMember (employeeId, firstName, lastName, nationality, dateOfBirth, salary, job) values ('5', 'Peter', 'Bonnington', 'England', to_date('1975-02-12', 'YYYY-MM-DD'), '450000', 'Senior Race Engineer');
@@ -378,7 +376,7 @@ insert into Circuit_2 (circuitName, numberOfLaps, type) values ('Marina Bay Stre
 -----------------------------------
 
 insert into GrandPrix_Ref (circuitName, city) values ('Bahrain International Circuit', 'Sakhir');
-insert into GrandPrix_Ref (circuitName, city) values ('Albert Park Circuit', 'Melbourne')
+insert into GrandPrix_Ref (circuitName, city) values ('Albert Park Circuit', 'Melbourne');
 insert into GrandPrix_Ref (circuitName, city) values ('Monaco', 'Monte Carlo');
 insert into GrandPrix_Ref (circuitName, city) values ('Silverstone Circuit', 'Towcester');
 insert into GrandPrix_Ref (circuitName, city) values ('Marina Bay Street Circuit', 'Marina Bay');
@@ -411,20 +409,20 @@ insert into GrandPrix_5 (year, gpName, circuitName) values ('2023', 'Singapore G
 insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('1', '37');
 insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('2', '30');
 insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('3', '25');
-insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('1', '25');
-insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('2', '27');
+-- insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('1', '25');
+-- insert into GrandPrix_ConstructorStanding_Ref (position, points) values ('2', '27');
 
 insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('1', 'Singapore Grand Prix', '2023');
 insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('2', 'British Grand Prix', '2023');
 insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('3', 'British Grand Prix', '2023');
-insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('1', 'Monaco Grand Prix', '2023');
-insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('2', 'Australian Grand Prix', '2023');
+-- insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('1', 'Monaco Grand Prix', '2023');
+-- insert into GrandPrix_ConstructorStanding_2 (position, gpName, year) values ('2', 'Australian Grand Prix', '2023');
 
 insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('1', '25');
 insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('4', '12');
 insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('2', '18');
 insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('3', '15');
-insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('4', '10');
+-- insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('4', '10');
 insert into GrandPrix_DriverStanding_Ref (racePosition, points) values ('16', '0');
 
 -- Statements 17-24
@@ -434,7 +432,7 @@ insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPo
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('2', 'British Grand Prix', '2023', '2'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('4', 'British Grand Prix', '2023', '3'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('3', 'British Grand Prix', '2023', '6'); 
-insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('4', 'British Grand Prix', '2023', '7'); 
+-- insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('4', 'British Grand Prix', '2023', '7'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('1', 'Monaco Grand Prix', '2023', '1'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('16', 'Monaco Grand Prix', '2023', '20'); 
 insert into GrandPrix_DriverStanding_2 (racePosition, gpName, year, qualifyingPosition) values ('3', 'Australian Grand Prix', '2023', '4'); 
@@ -462,40 +460,40 @@ insert into Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, num
 
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Oracle', 'Red Bull Racing', '500000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Zoom', 'Red Bull Racing', '150000000');
--- insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Tommy Hilfiger', 'Mercedes', '50000000');
--- insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Monster Energy', 'Mercedes', '85000000');
+insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Tommy Hilfiger', 'Mercedes', '50000000');
+insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Monster Energy', 'Mercedes', '85000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Ray-Ban', 'Ferrari', '290000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Shell', 'Ferrari', '350000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Chrome', 'McLaren', '420000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Michelob Ultra', 'Williams', '41000000');
 insert into Sponsors (companyName, constructorName, sponsorshipAmount) values ('Tik Tok', 'Aston Martin', NULL);
 
--- insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '2', '2005-01-01'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '1', '2013-01-01');
-insert into WorksWith (constructorName, employeeId, since) values ('McLaren', '3', '2016-11-01'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '4', '2009-11-01'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '5', '2011-09-01'); 
-insert into WorksWith (constructorName, employeeId, since) values ('McLaren', '6', '2023-03-05'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Williams', '7', '2023-03-05'); 
-insert into WorksWith (constructorName, employeeId, since) values ('AlphaTauri', '8', '2021-03-28'); 
-insert into WorksWith (constructorName, employeeId, since) values ('McLaren', '9', '2019-03-17'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Alfa Romeo', '10', '2022-03-20'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Aston Martin', '11', '2017-03-26'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '12', '2019-03-17'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Ferrari', '13', '2018-03-25'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Alpine', '14', '2016-08-28'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Williams', '15', '2019-03-17'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Alpine', '16', '2017-10-01'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Ferrari', '17', '2015-03-15'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Haas', '18', '2014-03-16'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '19', '2011-03-27'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Alfa Romeo', '20', '2013-03-17'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Haas', '21', '2010-03-14'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '22', '2007-03-28'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '23', '2015-03-15'); 
-insert into WorksWith (constructorName, employeeId, since) values ('Aston Martin', '24', '2001-03-04'); 
+insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '2', to_date('2005-01-01', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '1', to_date('2013-01-01', 'YYYY-MM-DD'));
+insert into WorksWith (constructorName, employeeId, since) values ('McLaren', '3', to_date('2016-11-01', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '4', to_date('2009-11-01', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '5', to_date('2011-09-01', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('McLaren', '6', to_date('2023-03-05', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Williams', '7', to_date('2023-03-05', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('AlphaTauri', '8', to_date('2021-03-28', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('McLaren', '9', to_date('2019-03-17', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Alfa Romeo', '10', to_date('2022-03-20', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Aston Martin', '11', to_date('2017-03-26', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '12', to_date('2019-03-17', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Ferrari', '13', to_date('2018-03-25', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Alpine', '14', to_date('2016-08-28', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Williams', '15', to_date('2019-03-17', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Alpine', '16', to_date('2017-10-01', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Ferrari', '17', to_date('2015-03-15', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Haas', '18', to_date('2014-03-16', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '19', to_date('2011-03-27', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Alfa Romeo', '20', to_date('2013-03-17', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Haas', '21', to_date('2010-03-14', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Mercedes', '22', to_date('2007-03-28', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Red Bull Racing', '23', to_date('2015-03-15', 'YYYY-MM-DD')); 
+insert into WorksWith (constructorName, employeeId, since) values ('Aston Martin', '24', to_date('2001-03-04', 'YYYY-MM-DD')); 
 
-insert into Drives (model, employeeId) values ('W14', '1'); 
+insert into Drives (model, employeeId) values ('W14', '12'); 
 insert into Drives (model, employeeId) values ('W14', '22'); 
 insert into Drives (model, employeeId) values ('RB19', '19'); 
 insert into Drives (model, employeeId) values ('RB19', '23'); 
@@ -503,40 +501,38 @@ insert into Drives (model, employeeId) values ('SF-23', '17');
 insert into Drives (model, employeeId) values ('SF-23', '13'); 
 insert into Drives (model, employeeId) values ('A523', '14'); 
 insert into Drives (model, employeeId) values ('A523', '16'); 
-insert into Drives (model, employeeId) values ('MCL60', '3'); 
+insert into Drives (model, employeeId) values ('MCL60', '9'); 
 insert into Drives (model, employeeId) values ('MCL60', '6'); 
 insert into Drives (model, employeeId) values ('C43', '10'); 
 insert into Drives (model, employeeId) values ('C43', '20'); 
 insert into Drives (model, employeeId) values ('AMR23', '24'); 
 insert into Drives (model, employeeId) values ('AMR23', '11'); 
-insert into Drives (model, employeeId) values ('WF-23', '18'); 
-insert into Drives (model, employeeId) values ('WF-23', '21'); 
+insert into Drives (model, employeeId) values ('VF-23', '18'); 
+insert into Drives (model, employeeId) values ('VF-23', '21'); 
 insert into Drives (model, employeeId) values ('AT04', '8'); 
 insert into Drives (model, employeeId) values ('FW45', '15'); 
 insert into Drives (model, employeeId) values ('FW45', '7'); 
 
-insert into InRelationshipWith (partnerId, employeeId, since, instagramFollowers) values ('1', '23', '2020-03-05', 'kellypiquet', '1300000'); 
-insert into InRelationshipWith (partnerId, employeeId, since, instagramFollowers) values ('2', '16', '2022-09-13', 'francisca.cgomes', '537000'); 
-insert into InRelationshipWith (partnerId, employeeId, since, instagramFollowers) values ('3', '12', '2020-06-20', 'carmenmmundt', '309000'); 
-insert into InRelationshipWith (partnerId, employeeId, since, instagramFollowers) values ('4', '6', '2019-01-16', 'lilyzneimer', '880'); 
-insert into InRelationshipWith (partnerId, employeeId, since, instagramFollowers) values ('5', '20', '2020-03-29', 'tiffanycromwell', '195000'); 
-insert into InRelationshipWith (partnerId, employeeId, since, instagramFollowers) values ('6', '15', '2019-04-12', 'lilymhe', '688000'); 
+insert into InRelationshipWith (partnerId, employeeId, since) values ('1', '23', to_date('2020-03-05', 'YYYY-MM-DD')); 
+insert into InRelationshipWith (partnerId, employeeId, since) values ('2', '16', to_date('2022-09-13', 'YYYY-MM-DD')); 
+insert into InRelationshipWith (partnerId, employeeId, since) values ('3', '12', to_date('2020-06-20', 'YYYY-MM-DD')); 
+insert into InRelationshipWith (partnerId, employeeId, since) values ('4', '6', to_date('2019-01-16', 'YYYY-MM-DD')); 
+insert into InRelationshipWith (partnerId, employeeId, since) values ('5', '20', to_date('2020-03-29', 'YYYY-MM-DD')); 
+insert into InRelationshipWith (partnerId, employeeId, since) values ('6', '15', to_date('2019-04-12', 'YYYY-MM-DD')); 
 
 insert into ConstructorHolds (position, gpName, year, constructorName) values ('1', 'Singapore Grand Prix', '2023', 'Ferrari'); 
 insert into ConstructorHolds (position, gpName, year, constructorName) values ('2', 'British Grand Prix', '2023', 'McLaren'); 
 insert into ConstructorHolds (position, gpName, year, constructorName) values ('3', 'British Grand Prix', '2023', 'Mercedes'); 
-insert into ConstructorHolds (position, gpName, year, constructorName) values ('1', 'Monaco Grand Prix', '2023', 'Red Bull Racing'); 
-insert into ConstructorHolds (position, gpName, year, constructorName) values ('2', 'Aston Martin', 'Australian Grand Prix', '2023', 'Aston Martin'); 
+-- insert into ConstructorHolds (position, gpName, year, constructorName) values ('1', 'Monaco Grand Prix', '2023', 'Red Bull Racing'); 
+-- insert into ConstructorHolds (position, gpName, year, constructorName) values ('2', 'Aston Martin', 'Australian Grand Prix', '2023', 'Aston Martin'); 
 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('1', 'Singapore Grand Prix', '2023', '17'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('4', 'Singapore Grand Prix', '2023', '13'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('2', 'British Grand Prix', '2023', '9'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('4', 'British Grand Prix', '2023', '6'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('3', 'British Grand Prix', '2023', '22'); 
-insert into DriverHolds (racePosition, gpName, year, employeeId) values ('4', 'British Grand Prix', '2023', '12'); 
+-- insert into DriverHolds (racePosition, gpName, year, employeeId) values ('4', 'British Grand Prix', '2023', '12'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('1', 'Monaco Grand Prix', '2023', '23'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('16', 'Monaco Grand Prix', '2023', '19'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('3', 'Australian Grand Prix', '2023', '24'); 
 insert into DriverHolds (racePosition, gpName, year, employeeId) values ('4', 'Australian Grand Prix', '2023', '11'); 
-
-
