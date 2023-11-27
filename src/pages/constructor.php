@@ -72,7 +72,7 @@ if (isset($_POST['updateSubmit'])) {
                             </div>
                             <div class="col">
                                 <label for="inputState" class="form-label">Updated amount of points</label>
-                                <input name="newPoints" type="number" class="form-control" placeholder="Points value" aria-label="Last name">
+                                <input name="newPoints" type="number" class="form-control" placeholder="Points value" aria-label="">
                             </div>
                         </div>
                         <div class="col-12 mt-3">
@@ -111,7 +111,7 @@ if (isset($_POST['updateSubmit'])) {
 
     <div class="d-flex justify-content-center">
         <?php
-            handleDisplayRequest("Constructor");
+            handleConstructorDisplayRequest("Constructor");
         ?>
     </div>
 
