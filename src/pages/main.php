@@ -125,7 +125,7 @@ function printResult($result, $tableName) { //prints results from a select state
 
 }
 
-function printResultWithoutTable($result) {
+function printResultWithoutTable($result) { // formats SQL request to options 
     while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
         foreach ($row as $value) {
             echo "<option value='$value'>". $value ."</option>"; 
@@ -143,8 +143,8 @@ function handleConstructorDisplayRequest($tableName) {
     }
 }
 
-// display query
-function handleConstructorRequest() {
+// dropdown query
+function handleConstructorDropdownRequest() {
 
     global $db_conn;
     global $constructor_names; 
@@ -166,7 +166,7 @@ function handleDriverDisplayRequest($tableName) {
     }
 }
 
-function handleDriverRequest() {
+function handleDriverDropdownRequest() {
 
     global $db_conn;
     global $employee_ids; 
@@ -175,26 +175,30 @@ function handleDriverRequest() {
                 FROM Driver d, TeamMember t
                 WHERE d.employeeId = t.employeeId";
         $employee_ids = executePlainSQL($sql);
-        printResultWithoutTable($constructor_names); 
+        printResultWithoutTable($employee_ids); 
     }
 }
 
+function handleGrandPrixDisplayRequest($tableName) {
 
-// function handleInsertRequest($data, $tableName) {
-//     global $db_conn;
+    // global $db_conn;
+    // if (connectToDB()) {
+    //     $sql = ;
+    //     $result = executePlainSQL($sql);
+    //     printResult($result, $tableName);
+    // }
+}
 
-//     # get values from user and insert into requested table
-//     $columns = implode(", ", array_keys($data));
-//     $values = "'" . implode("', '", array_values($data)) . "'";
-//     $sql = "INSERT INTO $tableName ($columns) VALUES ($values)";
+function handleGrandPrixRequest() {
 
-//     executePlainSQL($sql);
-//     oci_commit($db_conn);
-// }
-
-// DELETE query
-
-// UPDATE query
+    // global $db_conn;
+    // global ; 
+    // if (connectToDB()) {
+    //     $sql = ;
+    //     $ = executePlainSQL($sql);
+    //     printResultWithoutTable($); 
+    // }
+}
 
 // SELECTION query
 
@@ -215,14 +219,5 @@ function handleDriverRequest() {
 
 // front end code
 include('main.html'); 
-// handleDisplayRequest("Car");
-
-// handleInsertRequest(array(
-	// 	"model" => "RB18",
-	// 	"engine" => "Red Bull Powertrains - Honda",
-	// 	"constructorName" => "Red Bull Racing"
-	// ), "Car");
-
-
 
 ?>
