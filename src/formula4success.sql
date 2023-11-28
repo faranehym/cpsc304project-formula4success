@@ -214,6 +214,7 @@ create table Driver (
 	driverNumber		int 			NOT NULL, 
 	numberOfPolePositions 	int				DEFAULT 0 NOT NULL, 
 	FOREIGN KEY (employeeId) REFERENCES TeamMember(employeeId)
+		ON DELETE CASCADE
 );
 
 grant select on Driver to public;
@@ -236,6 +237,7 @@ create table WorksWith (
 	PRIMARY KEY (constructorName, employeeId), 
 	FOREIGN KEY (constructorName) REFERENCES Constructor(constructorName), 
 	FOREIGN KEY (employeeId) REFERENCES TeamMember(employeeId)
+		ON DELETE CASCADE
 );
 
 grant select on WorksWith to public;
@@ -246,6 +248,7 @@ create table Drives (
 	PRIMARY KEY (model, employeeId), 
 	FOREIGN KEY (model) REFERENCES Car(model), 
 	FOREIGN KEY (employeeId) REFERENCES Driver(employeeId)
+		ON DELETE CASCADE
 );
 
 grant select on Drives to public;
@@ -255,8 +258,10 @@ create table InRelationshipWith (
 	employeeId			int, 
 	since				date, 
 	PRIMARY KEY (partnerId, employeeId), 
-	FOREIGN KEY (partnerId) REFERENCES Partner_Ref(partnerId), 
+	FOREIGN KEY (partnerId) REFERENCES Partner_Ref(partnerId)
+		ON DELETE CASCADE, 
 	FOREIGN KEY (employeeId) REFERENCES Driver(employeeId)
+		ON DELETE CASCADE
 );
 
 grant select on InRelationshipWith to public;
