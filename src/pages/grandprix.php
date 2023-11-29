@@ -82,33 +82,38 @@ function handleSelectionRequest() {
     }
 }
 
-// function handlePOSTRequest() {
-//     if (connectToDB()) {
-//         if (array_key_exists('updateQueryRequest', $_POST)) {
-//             handleUpdateRequest();
-//         } else if (array_key_exists('averageQueryRequest', $_POST)) {
-//             handleAverageRequest();
-//         }
-//     } 
-// }
+function handleNestedAggRequest() {
+    global $db_conn;
+
+    $sql = "SELECT c2.type, avg(gp4.attendance)
+            FROM Circuit_Ref cref, Circuit_2 c2, GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_4 gp4
+            WHERE cref.numberOfLaps = c2.numberOfLaps AND
+                c2.circuitName = gpref.circuitName AND
+                gpref.circuitName = gp2.circuitName AND
+                gp2.circuitName = gp4.circuitName AND
+                gp2.year = gp4.year AND cref.numberOfLaps IN (SELECT cref2.numberOfLaps
+                                                            FROM Circuit_Ref cref2
+                                                            WHERE cref2.length > 300)
+            GROUP BY c2.type";
+    
+    $result = executePlainSQL($sql);
+    oci_commit($db_conn);
+    printResult($result, "GrandPrix");
+}
 
 function handleGETRequest() {
     if (connectToDB()) {
         if (array_key_exists('selectionQueryRequest', $_GET)) {
             handleSelectionRequest();
+        } else if (array_key_exists('nestedAggRequest', $_GET)) {
+            handleNestedAggRequest();
         }
     } 
 }
 
-// if (isset($_POST['updateSubmit'])) {
-//     handlePOSTRequest();
-// } else if (isset($_GET['averageSubmit'])) {
-//     handleGETRequest();
-// } else if (isset($_GET['sumSubmit'])) {
-//     handleGETRequest();
-// }
-
 if (isset($_GET['selectionSubmit'])) {
+    handleGETRequest();
+} else if (isset($_GET['nestedAggSubmit'])) {
     handleGETRequest();
 }
 ?>
@@ -250,26 +255,31 @@ if (isset($_GET['selectionSubmit'])) {
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            /some query
+            Circuit Type Spectatorship
             </button>
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-            <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                <div class="accordion-body">
+                    <form method="GET" action="grandprix.php">
+                        <input type="hidden" id="nestedAggRequest" name="nestedAggRequest">
+                        <div class="row">
+                            <div class="col">
+                                <label for="inputState" class="form-label">For each circuit type, find the average number of people in attendance at Grand Prixs with that type of circuit. Only include Grand Prixs where the circuit length is greater than 300 km.</label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="button" class="btn btn-primary" name="nestedAggSubmit" href="#collapseNested" role="button" aria-expanded="false" aria-controls="collapseNested" data-bs-toggle="collapse">Search</button> 
+                        </div> 
+                        <div class="collapse" id="collapseNested">
+                            <div class="card card-body">
+                                <?php
+                                    handleNestedAggRequest();
+                                ?>
+                            </div>
+                        </div>
+                    </form>                   
+                </div>
             </div>
-        </div>
-        </div>
-        <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-            /some other query
-            </button>
-        </h2>
-        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-            </div>
-        </div>
         </div>
     </div>
 
