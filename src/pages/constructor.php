@@ -24,6 +24,10 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 include('main.php'); 
 include('constructor.html'); 
 
+function showAverageAmount() {
+    
+}
+
 function handleUpdateRequest() {
     global $db_conn;  
     
@@ -35,28 +39,39 @@ function handleUpdateRequest() {
     oci_commit($db_conn);
 }
 
+function handleAverageRequest() {
+    global $db_conn;
+
+    // $sql = "";
+    // executePlainSQL($sql);
+}
+
 function handlePOSTRequest() {
     if (connectToDB()) {
         if (array_key_exists('updateQueryRequest', $_POST)) {
             handleUpdateRequest();
-        }            
-    }
+        } else if (array_key_exists('averageQueryRequest', $_POST)) {
+            handleAverageRequest();
+        }
+    } 
 }
 
 if (isset($_POST['updateSubmit'])) {
     handlePOSTRequest();
-}    
+} else if (isset($_POST['averageSubmit'])) {
+    handlePOSTRequest();
+}
 ?>
 
 <html>
     <div class="accordion mt-3" id="accordionExample">
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                 Update Constructor Points
                 </button>
             </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <form method="POST" action="constructor.php">
                         <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
@@ -66,13 +81,13 @@ if (isset($_POST['updateSubmit'])) {
                                 <select name="constructorName" id="inputState" class="form-select">
                                     <option selected>Constructor name...</option>
                                         <?php
-                                            handleConstructorRequest(); 
+                                            handleConstructorDropdownRequest(); 
                                         ?>
                                 </select>
                             </div>
                             <div class="col">
                                 <label for="inputState" class="form-label">Updated amount of points</label>
-                                <input name="newPoints" type="number" class="form-control" placeholder="Points value" aria-label="Last name">
+                                <input name="newPoints" type="number" class="form-control" placeholder="Points value" aria-label="">
                             </div>
                         </div>
                         <div class="col-12 mt-3">
@@ -86,14 +101,24 @@ if (isset($_POST['updateSubmit'])) {
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-            /some query
+            Constructors' Sponsors
             </button>
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-            <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                <div class="accordion-body">
+                    <form method="POST" action="constructor.php">
+                        <input type="hidden" id="averageQueryRequest" name="averageQueryRequest">
+                        <div class="row">
+                            <div class="col">
+                                <label for="inputState" class="form-label">Find the average sponsorship amount for constructors by country</label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button onclick="showAverageAmount()" type="submit" class="btn btn-primary" name="averageSubmit">Search</button> 
+                        </div> 
+                    </form> 
+                </div>
             </div>
-        </div>
         </div>
         <div class="accordion-item">
         <h2 class="accordion-header">
@@ -111,7 +136,7 @@ if (isset($_POST['updateSubmit'])) {
 
     <div class="d-flex justify-content-center">
         <?php
-            handleDisplayRequest("Constructor");
+            handleConstructorDisplayRequest("Constructor");
         ?>
     </div>
 

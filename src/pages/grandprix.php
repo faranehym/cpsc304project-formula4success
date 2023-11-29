@@ -26,3 +26,72 @@ include('main.php');
 include('grandprix.html'); 
 ?>
 
+<html>
+    <div class="accordion mt-3" id="accordionExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Update Constructor Points
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <form method="POST" action="constructor.php">
+                        <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+                        <div class="row">
+                            <div class="col">
+                                <label for="inputState" class="form-label">Choose the Constructor</label>
+                                <select name="constructorName" id="inputState" class="form-select">
+                                    <option selected>Constructor name...</option>
+                                        <?php
+                                            handleDriverDropdownRequest(); 
+                                        ?>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="inputState" class="form-label">Updated amount of points</label>
+                                <input name="newPoints" type="number" class="form-control" placeholder="Points value" aria-label="">
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="submit" class="btn btn-primary" name="updateSubmit">Update</button> 
+                        </div> 
+                    </form> 
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            /some query
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+            <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+        </div>
+        </div>
+        <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            /some other query
+            </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <?php
+            handleGrandPrixDisplayRequest("Constructor");
+        ?>
+    </div>
+
+</html>
+
