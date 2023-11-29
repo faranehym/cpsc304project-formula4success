@@ -61,6 +61,40 @@ function handleInsertRequest() {
     }
 }
 
+function handlePartnerRequest() {
+    global $db_conn;
+
+    // foreach(array_keys($_POST) as $paramName){
+    //     echo $paramName . "<br>";
+    // }
+    $amount = $_POST['instagramFollowers'];
+    $sql = "CREATE VIEW teamDriver(employeeId, firstName, lastName) AS
+            SELECT tm.employeeId, firstName, lastName
+            FROM TeamMember tm, Driver d
+            WHERE tm.employeeId = d.employeeId";
+            
+    $sql2 = "CREATE VIEW partnerDrivers(instagramFollowers, partnerId, partnerName) AS
+            SELECT p.instagramFollowers, ref.partnerId, ref.partnerName
+            FROM Partner_Ref ref, Partner_2 p
+            WHERE ref.instagramHandle = p.instagramHandle";
+
+    $sql3 = "SELECT p.instagramFollowers, d.firstName, d.lastName, p.partnerName
+            FROM teamDriver d,inRelationshipWith r, partnerDrivers p
+            WHERE d.employeeId = r.employeeId AND r.partnerId = p.partnerId 
+            AND p.instagramFollowers > '$amount'";
+    
+    $sql4 = "DROP VIEW teamDriver";
+    $sql5 = "DROP VIEW partnerDrivers";
+
+    $result = executePlainSQL($sql);
+    $result2 = executePlainSQL($sql2);
+    $result3 = executePlainSQL($sql3);
+    executePlainSQL($sql4);
+    executePlainSQL($sql5);
+    oci_commit($db_conn);
+    printResult($result3, "Driver");
+}
+
 function handleDeleteRequest() {
 
     global $db_conn;
@@ -78,13 +112,25 @@ function handlePOSTRequest() {
             handleInsertRequest();
         } else if (array_key_exists('deleteQueryRequest', $_POST)) {
             handleDeleteRequest();
-        }        
+        }  else if (array_key_exists('partnerQueryRequest', $_POST)) {
+            handlePartnerRequest();
+        }      
     }
 }
+
+// function handleGETRequest() {
+//     if (connectToDB()) {
+//         if (array_key_exists('partnerQueryRequest', $_GET)) {
+//             handlePartnerRequest();
+//         }
+//     } 
+// }
 
 if (isset($_POST['insertSubmit'])) {
     handlePOSTRequest();
 } else if (isset($_POST['deleteSubmit'])) {
+    handlePOSTRequest();
+} else if (isset($_POST['partnerSubmit'])) {
     handlePOSTRequest();
 }
 ?>
@@ -182,105 +228,141 @@ if (isset($_POST['insertSubmit'])) {
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-            Filter Drivers (Selection)
+            View Driver Data (Projection)
             </button>
         </h2>
         <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
             <div class="accordion-body">
                 <form method="POST" action="driver.php">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                    <h6 class="mt-3">Refine your search by:</h6>
+                    <div class="form-check form-check-inline mt-1">
+                        <input class="form-check-input" type="radio" name="allAttributes" id="flexRadioDefault1">
                         <label class="form-check-label" for="flexRadioDefault1">
-                            Including ALL selected attributes
+                            Including <em>all</em> selected attributes
                         </label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                        <input class="form-check-input" type="radio" name="anyAttributes" id="flexRadioDefault2" checked>
                         <label class="form-check-label" for="flexRadioDefault2">
-                            Including ANY selected attributes
+                            Including <em>any</em> selected attributes
                         </label>
                     </div>
 
                     <h6 class="mt-3">Select which attributes to view:</h6>
+                    <div class="d-inline-flex p-2">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="firstName" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        First name
+                                    </label>
+                                </div>
 
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            First name
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Last name
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Date of birth
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Nationality 
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Salary
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Driver number
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Employee ID
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Number of wins
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Number of podiums
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Number of pole positions
-                        </label>
-                    </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" name="lastName" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Last name
+                                    </label>
+                                </div>
 
+                                <div class="form-check">
+                                    <input class="form-check-input" name="dateOfBirth" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Date of birth
+                                    </label>
+                                </div>
 
+                                <div class="form-check">
+                                    <input class="form-check-input" name="nationality" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Nationality
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="driverNumber" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Driver number
+                                    </label>
+                                </div>
 
+                                <div class="form-check">
+                                    <input class="form-check-input" name="employeeId" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Employee ID
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" name="salary" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Salary
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <input class="form-check-input" name="numberOfWins" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Number of wins
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" name="numberOfPodiums" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Number of podiums
+                                    </label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" name="dateOfBirth" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Number of pole positions
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
+
+                <div>
+                    hello
+                </div>
             </div>
         </div>
         </div>
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-            Driver Partners
+            Drivers and their Partners
             </button>
         </h2>
         <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                <div class="accordion-body">
+                    <form method="POST" action="driver.php">
+                        <input type="hidden" id="partnerQueryRequest" name="partnerQueryRequest">
+                        <div class="row">
+                            <div class="col">
+                                <label for="inputState" class="form-label">Find the drivers who are dating someone with more than ___ Instagram followers.</label>
+                                <input name="instagramFollowers" type="number" class="form-control" placeholder="Follower Amount" aria-label="">
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="submit" onsubmit="return false" class="btn btn-primary" href="#collapseExample" name="partnerSubmit">Search</button> 
+                        </div> 
+                    </form>  
+                    <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <?php
+                                    handlePartnerRequest();
+                                ?>
+                            </div>
+                        </div>                 
+                </div>
             </div>
-        </div>
         </div>
     </div>
 

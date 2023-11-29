@@ -24,26 +24,77 @@ $show_debug_alert_messages = False; // show which methods are being triggered (s
 include('main.php'); 
 include('constructor.html'); 
 
-function showAverageAmount() {
-    
-}
-
 function handleUpdateRequest() {
     global $db_conn;  
     
     $constructor_name = $_POST['constructorName'];
     $new_points = $_POST['newPoints'];
 
+    if ($new_points == NULL) {
+        echo "Error: Points value cannot be empty.";
+    } else {
+        executePlainSQL("UPDATE Constructor SET  numberOfWins='" . $new_points . "' WHERE constructorName='" . $constructor_name . "'");
+        oci_commit($db_conn);
+    }
     // you need the wrap the old name and new name values with single quotations
-    executePlainSQL("UPDATE Constructor SET  numberOfWins='" . $new_points . "' WHERE constructorName='" . $constructor_name . "'");
-    oci_commit($db_conn);
 }
 
 function handleAverageRequest() {
     global $db_conn;
 
-    // $sql = "";
-    // executePlainSQL($sql);
+    $sql = "SELECT c.nationality AS country, AVG(s.sponsorshipAmount) AS AverageDollarAmount
+            FROM Sponsors s, Constructor c
+            WHERE s.constructorName = c.constructorName
+            GROUP BY c.nationality";
+    $result = executePlainSQL($sql);
+    oci_commit($db_conn);
+    printResult($result, "Constructor");
+}
+
+function handleEngineRequest() {
+    global $db_conn;
+
+    $sql = "CREATE VIEW constructorCarInfo(constructorName, nationality, numberOfWins, model, engine) AS
+            SELECT c.constructorName, nationality, numberOfWins, model, engine
+            FROM Constructor c
+            LEFT OUTER JOIN Car c2 ON c.constructorName = c2.constructorName";
+            
+    $sql2 = "select engine, SUM(numberOfWins)
+            from constructorCarInfo
+            group by engine";
+    
+    $sql3 = "DROP VIEW constructorCarInfo";
+    $result1 = executePlainSQL($sql);
+    $result = executePlainSQL($sql2);
+    executePlainSQL($sql3);
+    oci_commit($db_conn);
+    printResult($result, "Constructor");
+}
+
+function handleDriverRequest() {
+    global $db_conn;
+
+    $sql = "CREATE VIEW DrivesCar(constructorName, model, employeeId) AS
+            SELECT cr.constructorName, cr.model, d.employeeId
+            from Drives d, Car cr
+            where cr.model = d.model";
+
+    $sql2 = "SELECT DISTINCT c.constructorName
+            FROM Constructor c
+            WHERE EXISTS (
+                SELECT 1
+                FROM Driver d, DrivesCar dc
+                WHERE d.employeeId = dc.employeeId
+                AND c.constructorName = dc.constructorName
+                AND d.numberOfWins > 0
+            )";
+
+    $sql3 = "DROP VIEW DrivesCar";
+    $result1 = executePlainSQL($sql);
+    $result = executePlainSQL($sql2);
+    executePlainSQL($sql3);
+    oci_commit($db_conn);
+    printResult($result, "Constructor");
 }
 
 function handlePOSTRequest() {
@@ -56,10 +107,26 @@ function handlePOSTRequest() {
     } 
 }
 
+function handleGETRequest() {
+    if (connectToDB()) {
+        if (array_key_exists('averageQueryRequest', $_GET)) {
+            handleAverageRequest();
+        } else if (array_key_exists('sumQueryRequest', $_GET)) {
+            handleEngineRequest();
+        } else if (array_key_exists('driverQueryRequest', $_GET)) {
+            handleDriverRequest();
+        }
+    } 
+}
+
 if (isset($_POST['updateSubmit'])) {
     handlePOSTRequest();
-} else if (isset($_POST['averageSubmit'])) {
-    handlePOSTRequest();
+} else if (isset($_GET['averageSubmit'])) {
+    handleGETRequest();
+} else if (isset($_GET['sumSubmit'])) {
+    handleGETRequest();
+}   else if (isset($_GET['driverSubmit'])) {
+    handleGETRequest();
 }
 ?>
 
@@ -106,29 +173,84 @@ if (isset($_POST['updateSubmit'])) {
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                    <form method="POST" action="constructor.php">
+                    <form method="GET" action="constructor.php">
                         <input type="hidden" id="averageQueryRequest" name="averageQueryRequest">
                         <div class="row">
                             <div class="col">
-                                <label for="inputState" class="form-label">Find the average sponsorship amount for constructors by country</label>
+                                <label for="inputState" class="form-label">Find the average sponsorship amount given to the constructor's country</label>
                             </div>
                         </div>
                         <div class="col-12 mt-3">
-                            <button onclick="showAverageAmount()" type="submit" class="btn btn-primary" name="averageSubmit">Search</button> 
+                            <button type="button" class="btn btn-primary" name="averageSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
                         </div> 
-                    </form> 
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <?php
+                                    handleAverageRequest();
+                                ?>
+                            </div>
+                        </div>
+                    </form>                   
+                </div>
+            </div>
+        </div>
+        
+        <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Engine Manufacturers
+            </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <form method="GET" action="constructor.php">
+                        <input type="hidden" id="sumQueryRequest" name="sumQueryRequest">
+                        <div class="row">
+                            <div class="col">
+                                <label for="inputState" class="form-label">Find the engine manufacturers with more than 5 championship wins.</label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="button" class="btn btn-primary" name="sumSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
+                        </div> 
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <?php
+                                    handleEngineRequest();
+                                ?>
+                            </div>
+                        </div>
+                    </form>                   
                 </div>
             </div>
         </div>
         <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-            /some other query
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseTwo">
+            Constructors' Race Wins
             </button>
         </h2>
-        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <form method="GET" action="constructor.php">
+                        <input type="hidden" id="driverQueryRequest" name="driverQueryRequest">
+                        <div class="row">
+                            <div class="col">
+                                <label for="inputState" class="form-label">Find all constructors with drivers winning at least one race</label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="button" class="btn btn-primary" name="driverSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
+                        </div> 
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <?php
+                                    handleDriverRequest();
+                                ?>
+                            </div>
+                        </div>
+                    </form>                   
+                </div>
             </div>
         </div>
         </div>
