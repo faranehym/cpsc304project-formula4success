@@ -18,132 +18,173 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 include('main.php');
+include('home.html'); 
+
+
+// dropdown query
+function handleGetTableAttributes($selectedTable) {
+    global $db_conn;
+    $sql_d = "SELECT DISTINCT COLUMN_NAME
+              FROM ALL_TAB_COLUMNS
+              WHERE TABLE_NAME = UPPER('$selectedTable')"; // problem -> synchronous calls. 
+
+    if (connectToDB()) {
+        echo "<h1>". $selectedTable ."</h1>"; 
+        $attributes = executePlainSQL($sql_d);
+        printAttributes($attributes);
+    }
+
+    oci_commit($db_conn);
+}
+
+function printAttributes($result) { // formats SQL request to options 
+    while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+        foreach ($row as $value) {
+            echo "<h1>". $value ."</h1>"; 
+        }
+    }
+}
+
 ?>
 
 
 <html>
-    <div>
-    
-        <form method="POST" action="constructor.php">
-                        <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
-                        <div class="row">
-                            <div class="col">
-                                <label for="inputState" class="form-label">Select a table to view:</label>
-                                <select name="constructorName" id="inputState" class="form-select">
-                                        <option disabled>Table name...</option>
-                                        <option disabled><em>Entities:</em></option>
-                                        <option>Sponsors</option>
-                                        <option>Constructors</option>
-                                        <option>Team Members</option>
-                                        <option>Cars</option>
-                                        <option>Partners</option>
-                                        <option>Circuits</option>
-                                        <option>Grand Prix</option>
-                                        <option>Drivers</option>
-                                        <option disabled><em>Relationships:</em></option>
-                                        <option>ConstructorStandings</option>
-                                        <option>DriverStandings</option>
-                                        <option>Sponsors</option>
-                                        <option>WorksWith</option>
-                                        <option>Drives</option>
-                                        <option>InRelationshipWith</option>
-                                        <option>ConstructorHolds</option>
-                                        <option>DriverHolds</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label for="inputState" class="form-label">Updated amount of points</label>
-                                <input name="newPoints" type="number" class="form-control" placeholder="Points value" aria-label="">
-                            </div>
-                        </div>
-                        <div class="col-12 mt-3">
-                            <button type="submit" class="btn btn-primary" name="updateSubmit">Update</button> 
-                        </div> 
-        </form> 
-        
-        <form method="GET" action="driver.php">
-        <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
-
-        <h6 class="mt-3">Select which attributes to view:</h6>
-        <div class="d-inline-flex p-2">
+    <div class="container-fluid mt-3">
+        <h2 class="page-headings mt-3">
+          Explore the Database
+        </h2>
+        <form id="selectTableForm" method="" action="">
+            <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
             <div class="row">
                 <div class="col">
-                    <div class="form-check">
-                        <input class="form-check-input" name="firstName" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            First name
-                        </label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" name="lastName" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Last name
-                        </label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" name="dateOfBirth" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Date of birth
-                        </label>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" name="nationality" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Nationality
-                        </label>
-                    </div>
+                    <label for="inputState" class="form-label">Select a table to view:</label>
+                    <select name="tableName" id="inputState" class="form-select">
+                            <option>Table name...</option>
+                            <option disabled><em>Entities:</em></option>
+                            <option value="SPONSOR">Sponsors</option>
+                            <option value="CONSTRUCTOR">Constructors</option>
+                            <option value="TEAMMEMBER">Team Members</option>
+                            <option value="CAR">Cars</option>
+                            <option value="PARTNER">Partners</option>
+                            <option value="CIRCUIT">Circuits</option>
+                            <option value="GRANDPRIX">Grand Prix</option>
+                            <option value="DRIVER">Drivers</option>
+                            <option disabled><em>Relationships:</em></option>
+                            <option value="CONSTRUCTORSTANDING">ConstructorStandings</option>
+                            <option value="DRIVERSTANDING">DriverStandings</option>
+                            <option value="SPONSORS">Sponsors</option>
+                            <option value="WORKSWITH">WorksWith</option>
+                            <option value="DRIVES">Drives</option>
+                            <option value="INRELATIONSHIPWITH">InRelationshipWith</option>
+                            <option value="CONSTRUCTORHOLDS">ConstructorHolds</option>
+                            <option value="DRIVERHOLDS">DriverHolds</option>
+                    </select>
                 </div>
-                <div class="col">
-                    <div class="form-check">
-                        <input class="form-check-input" name="driverNumber" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Driver number
-                        </label>
-                    </div>
+            </div>        
+            <div class="col-12 mt-3">
+                <button type="button" class="btn btn-primary" name="updateSubmit" onclick="toggleAndSubmitForm()">Choose attributes for selected table</button> 
+            </div> 
+        </form>
 
-                    <div class="form-check">
-                        <input class="form-check-input" name="employeeId" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Employee ID
-                        </label>
-                    </div>
+        <div id="attributePopUp" class="mt-3 alert alert-danger" style="display: none;">
+        <form>
+            <h6>Select which attributes to view:</h6>
+            <div class="d-inline-flex p-2">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" name="firstName" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                First name
+                            </label>
+                        </div>
 
-                    <div class="form-check">
-                        <input class="form-check-input" name="salary" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Salary
-                        </label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-check">
-                        <input class="form-check-input" name="numberOfWins" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Number of wins
-                        </label>
-                    </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="lastName" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Last name
+                            </label>
+                        </div>
 
-                    <div class="form-check">
-                        <input class="form-check-input" name="numberOfPodiums" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Number of podiums
-                        </label>
-                    </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="dateOfBirth" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Date of birth
+                            </label>
+                        </div>
 
-                    <div class="form-check">
-                        <input class="form-check-input" name="numberOfPolePositions" type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Number of pole positions
-                        </label>
+                        <div class="form-check">
+                            <input class="form-check-input" name="nationality" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Nationality
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" name="driverNumber" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Driver number
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" name="employeeId" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Employee ID
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" name="salary" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Salary
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" name="numberOfWins" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Number of wins
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" name="numberOfPodiums" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Number of podiums
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" name="numberOfPolePositions" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Number of pole positions
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="col-12 mt-3 mt-3">
+                    <button type="submit" class="btn btn-primary" name="projectionSubmit">Insert</button> 
+            </div>
+        </form>  
         </div>
-        <div class="col-12 mt-3 mt-3">
-                <button type="submit" class="btn btn-primary" name="projectionSubmit">Insert</button> 
-        </div>
-        </form>
-</div>
+    </div>
+
+    <script>
+        function toggleAndSubmitForm() {
+            var form = document.getElementById("selectTableForm");
+            var selectedOption = form.elements["tableName"].value; 
+        
+            // display the element: 
+            var element = document.getElementById("attributePopUp");
+            element.style.display = "block";
+
+            // argh do i need to be calling php asynchronously 
+            var phpCode = '<?php echo handleGetTableAttributes("' + selectedOption + '"); ?>';
+            element.innerHTML = phpCode; 
+        }
+    </script>
+</html>
