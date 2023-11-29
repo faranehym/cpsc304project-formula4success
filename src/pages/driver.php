@@ -40,24 +40,34 @@ function handleInsertRequest() {
     $poles = $_POST['numberOfPolePositions'];
     $id = $_POST['employeeId'];
 
-    $check_id = executePlainSQL("SELECT COUNT(*) AS count
+    $any_nulls = false;
+    foreach ([$first_name, $last_name, $dob, $nationality, $salary, $job, $num, $wins, $podiums, $poles, $id] as $feature) {
+        if (is_null($feature)) {
+            $any_nulls = true;
+        }
+    }
+    if ($any_nulls) {
+        echo "Error: Please input valid values for each driver features.";
+    } else {
+        $check_id = executePlainSQL("SELECT COUNT(*) AS count
                                 FROM TeamMember
                                 WHERE employeeId = '$id'");
 
-    $row = OCI_Fetch_Array($check_id, OCI_BOTH);
-    $id_count = $row[0]; // not finding the array or making the array
+        $row = OCI_Fetch_Array($check_id, OCI_BOTH);
+        $id_count = $row[0]; // not finding the array or making the array
 
-    if ($id_count != 0) {
-        echo "Error: Employee ID already exists.";
-    } else {
-        $sql_tm = "INSERT INTO TeamMember (employeeId, firstName, lastName, nationality, 
+        if ($id_count != 0) {
+            echo "Error: Employee ID already exists.";
+        } else {
+            $sql_tm = "INSERT INTO TeamMember (employeeId, firstName, lastName, nationality, 
                 dateOfBirth, salary, job) values ('$id', '$first_name', '$last_name', '$nationality', 
                 to_date('$dob', 'YYYY-MM-DD'), '$salary', '$job')";
-        $sql_d = "INSERT INTO Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, 
+            $sql_d = "INSERT INTO Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, 
                 numberOfPolePositions) values ('$id', '$podiums', '$wins', '$num', '$poles')";
-        executePlainSQL($sql_tm);
-        executePlainSQL($sql_d);
-        oci_commit($db_conn);
+            executePlainSQL($sql_tm);
+            executePlainSQL($sql_d);
+            oci_commit($db_conn);
+        }
     }
 }
 

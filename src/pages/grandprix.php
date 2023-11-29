@@ -78,7 +78,7 @@ function handleSelectionRequest() {
         }
         $result = executePlainSQL($sql);
         oci_commit($db_conn);
-        printResult($result, "GrandPrix");
+        printResult($result, "Grand Prix");
     }
 }
 
@@ -98,7 +98,7 @@ function handleNestedAggRequest() {
     
     $result = executePlainSQL($sql);
     oci_commit($db_conn);
-    printResult($result, "GrandPrix");
+    printResult($result, "Grand Prix");
 }
 
 function handleGETRequest() {
@@ -260,19 +260,19 @@ if (isset($_GET['selectionSubmit'])) {
             </button>
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                    <form method="GET" action="grandprix.php">
-                        <input type="hidden" id="nestedAggRequest" name="nestedAggRequest">
-                        <div class="row">
-                            <div class="col">
-                                <label for="inputState" class="form-label">For each circuit type, find the average number of people in attendance at Grand Prixs with that type of circuit. Only include Grand Prixs where the circuit length is greater than 300 km.</label>
-                            </div>
+            <div class="accordion-body">
+                <form method="GET" action="grandprix.php">
+                    <input type="hidden" id="nestedAggRequest" name="nestedAggRequest">
+                    <div class="row">
+                        <div class="col">
+                            <label for="inputState" class="form-label">For each circuit type, find the average number of people in attendance at Grand Prixs with that type of circuit. Only include Grand Prixs where the circuit length is greater than 300 km.</label>
                         </div>
-                        <div class="col-12 mt-3">
-                            <button type="submit" class="btn btn-primary" name="nestedAggSubmit" href="#collapseNested" role="button" aria-expanded="false" aria-controls="collapseNested" data-bs-toggle="collapse">Search</button> 
-                        </div> 
+                    </div>
+                    <div class="col-12 mt-3">
+                        <button type="submit" class="btn btn-primary" name="nestedAggSubmit" href="#collapseNested" role="button" aria-expanded="false" aria-controls="collapseNested" data-bs-toggle="collapse">Search</button> 
+                    </div> 
                         
-                    </form> 
+                </form> 
                     <!-- <div class="collapse" id="collapseNested">
                             <div class="card card-body">
                                 <?php
@@ -280,14 +280,14 @@ if (isset($_GET['selectionSubmit'])) {
                                 ?>  
                             </div>
                         </div>                   -->
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- currently only works if another submit request is executed -->
     <div class="d-flex justify-content-center">
         <?php
-            handleGrandPrixDisplayRequest("Constructor");
+            handleGrandPrixDisplayRequest("Grand Prix");
         ?>
     </div>
 

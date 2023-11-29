@@ -117,29 +117,66 @@ function get_header_names($result) {
     return executePlainSQL($sql_h);
 }
 
-function printResult($result, $tableName, $result_header) { //prints results from a select statement
+// --- OLD VERSION ---
+// function printResult($result, $tableName, $result_header) { //prints results from a select statement
 
+//     // Output data of each row
+//     global $db_conn;
+//     echo "<table border='1'><tr>";
+//     echo "<tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
+//     if (connectToDB()) {
+//         echo "<h1>". $tableName ."</h1>"; 
+//         while ($name = OCI_Fetch_Array($result_header, OCI_ASSOC)) {
+//             foreach ($name as $header) {
+//                 echo "<th style='padding: 8px; text-align: left; border-right: 1px solid #dddddd;'>{$header}</th>";
+//             }
+//         }
+//         while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+//             echo "</tr>";
+//             foreach ($row as $value) {
+//                 echo "<td style='padding: 8px; border-right: 1px solid #dddddd;'>{$value}</td>";
+//             }
+//         echo "</tr>";
+//         } 
+//     echo "</table>";
+//     }
+
+// }
+
+// --- NEW VERSION --
+function printResult($result, $tableName) {
     // Output data of each row
     global $db_conn;
     echo "<table border='1'><tr>";
     echo "<tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
-    if (connectToDB()) {
-        echo "<h1>". $tableName ."</h1>"; 
-        while ($name = OCI_Fetch_Array($result_header, OCI_ASSOC)) {
-            foreach ($name as $header) {
-                echo "<th style='padding: 8px; text-align: left; border-right: 1px solid #dddddd;'>{$header}</th>";
-            }
+
+    echo "<h1>" . $tableName . "</h1>";
+
+    if ($result) {
+        // Fetch result headers
+        $numCols = oci_num_fields($result);
+        echo "<table border='1'><tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
+
+        for ($i = 1; $i <= $numCols; $i++) {
+            $colName = oci_field_name($result, $i);
+            echo "<th style='padding: 8px; text-align: left; border-right: 1px solid #dddddd;'>{$colName}</th>";
         }
-        while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-            echo "</tr>";
+
+        echo "</tr>";
+
+        // Fetch and display rows
+        while ($row = oci_fetch_assoc($result)) {
+            echo "<tr>";
             foreach ($row as $value) {
                 echo "<td style='padding: 8px; border-right: 1px solid #dddddd;'>{$value}</td>";
             }
-        echo "</tr>";
-        } 
-    echo "</table>";
-    }
+            echo "</tr>";
+        }
 
+        echo "</table>";
+    } else {
+        echo "No results found.";
+    }
 }
 
 function printResultWithoutTable($result) { // formats SQL request to options 
@@ -179,12 +216,12 @@ function handleDriverDisplayRequest($tableName) {
                 FROM Driver d, TeamMember t
                 WHERE d.employeeId = t.employeeId";
         $result = executePlainSQL($sql);
-        $result_header = get_header_names($result);
+        //$result_header = get_header_names($result);
         // $sql_h = "SELECT DISTINCT COLUMN_NAME
         //             FROM ALL_TAB_COLUMNS
         //             WHERE TABLE_NAME = UPPER('$result')";
         // $result_header = executePlainSQL($sql_h);
-        printResult($result, $tableName, $result_header);
+        printResult($result, $tableName);
     }
 }
 
@@ -202,13 +239,19 @@ function handleDriverDropdownRequest() {
 }
 
 function handleGrandPrixDisplayRequest($tableName) {
-
-    // global $db_conn;
-    // if (connectToDB()) {
-    //     $sql = ;
-    //     $result = executePlainSQL($sql);
-    //     printResult($result, $tableName);
-    // }
+    global $db_conn;
+    if (connectToDB()) {
+        $sql = "SELECT DISTINCT *
+                FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
+                WHERE gpref.circuitName = gp2.circuitName AND
+                    gpref.circuitName = gp3.circuitName AND
+                    gp2.circuitName = gp4.circuitName AND
+                    gp2.year = gp4.year AND
+                    gp2.circuitName = gp5.circuitName AND
+                    gp2.year = gp5.year";
+        $result = executePlainSQL($sql);
+        printResult($result, $tableName);
+    }
 }
 
 function handleGrandPrixRequest() {
