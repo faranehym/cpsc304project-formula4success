@@ -22,14 +22,16 @@ include('home.html');
 
 
 // dropdown query
-function handleGetTableAttributes($selectedTable) {
+function handleGetTableAttributes() {
     global $db_conn;
+    $table_name = $_GET['tableName']; 
+
     $sql_d = "SELECT DISTINCT COLUMN_NAME
               FROM ALL_TAB_COLUMNS
-              WHERE TABLE_NAME = UPPER('$selectedTable')"; // problem -> synchronous calls. 
+              WHERE TABLE_NAME = UPPER('$table_name')"; // problem -> synchronous calls. 
 
     if (connectToDB()) {
-        echo "<h1>". $selectedTable ."</h1>"; 
+        echo "<h1>". $table_name ."</h1>"; 
         $attributes = executePlainSQL($sql_d);
         printAttributes($attributes);
     }
@@ -39,10 +41,17 @@ function handleGetTableAttributes($selectedTable) {
 
 function printAttributes($result) { // formats SQL request to options 
     while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-        foreach ($row as $value) {
+        foreach ($row as $value) {  
             echo "<h1>". $value ."</h1>"; 
         }
     }
+}
+
+
+if (isset($_GET['tableName'])) {
+    $selectedTable = $_GET['tableName']
+    // echo "<h1>Selected Table: $selectedTable</h1>";
+    // handleGetTableAttributes($selectedTable); 
 }
 
 ?>
@@ -53,8 +62,8 @@ function printAttributes($result) { // formats SQL request to options
         <h2 class="page-headings mt-3">
           Explore the Database
         </h2>
-        <form id="selectTableForm" method="" action="">
-            <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+        <form id="selectTableForm" method="get" action="home.php" onsubmit="toggleAndSubmitForm(); return false;">
+            <input type="hidden" id="attributeQueryRequest" name="attributeQueryRequest">
             <div class="row">
                 <div class="col">
                     <label for="inputState" class="form-label">Select a table to view:</label>
@@ -182,9 +191,16 @@ function printAttributes($result) { // formats SQL request to options
             var element = document.getElementById("attributePopUp");
             element.style.display = "block";
 
-            // argh do i need to be calling php asynchronously 
-            var phpCode = '<?php echo handleGetTableAttributes("' + selectedOption + '"); ?>';
-            element.innerHTML = phpCode; 
+            // use AJAX to make a request to PHP (server)
+            var xhttp = new XMLHttpRequest(); 
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Update the HTML element with the response from the server
+                    document.getElementById("attributePopUp").innerHTML = this.responseText;
+                }
+            };
+            xhttp.open("GET", "home.php?tableName=" + selectedOption, true);
+            xhttp.send();
         }
     </script>
 </html>

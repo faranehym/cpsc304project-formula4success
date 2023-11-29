@@ -110,18 +110,35 @@ function connectToDB() {
     }
 }
 
-function printResult($result, $tableName) { //prints results from a select statement
+function get_header_names($result) {
+    $sql_h = "SELECT DISTINCT COLUMN_NAME
+                    FROM ALL_TAB_COLUMNS
+                    WHERE TABLE_NAME = UPPER('$result')";
+    return executePlainSQL($sql_h);
+}
+
+function printResult($result, $tableName, $result_header) { //prints results from a select statement
 
     // Output data of each row
+    global $db_conn;
     echo "<table border='1'><tr>";
-    while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-        echo "<tr>";
-        foreach ($row as $value) {
-            echo "<td>" . $value . "</td>";
+    echo "<tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
+    if (connectToDB()) {
+        echo "<h1>". $tableName ."</h1>"; 
+        while ($name = OCI_Fetch_Array($result_header, OCI_ASSOC)) {
+            foreach ($name as $header) {
+                echo "<th style='padding: 8px; text-align: left; border-right: 1px solid #dddddd;'>{$header}</th>";
+            }
         }
+        while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
+            echo "</tr>";
+            foreach ($row as $value) {
+                echo "<td style='padding: 8px; border-right: 1px solid #dddddd;'>{$value}</td>";
+            }
         echo "</tr>";
-    }
+        } 
     echo "</table>";
+    }
 
 }
 
@@ -162,7 +179,12 @@ function handleDriverDisplayRequest($tableName) {
                 FROM Driver d, TeamMember t
                 WHERE d.employeeId = t.employeeId";
         $result = executePlainSQL($sql);
-        printResult($result, $tableName);
+        $result_header = get_header_names($result);
+        // $sql_h = "SELECT DISTINCT COLUMN_NAME
+        //             FROM ALL_TAB_COLUMNS
+        //             WHERE TABLE_NAME = UPPER('$result')";
+        // $result_header = executePlainSQL($sql_h);
+        printResult($result, $tableName, $result_header);
     }
 }
 

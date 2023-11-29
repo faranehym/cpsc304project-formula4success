@@ -252,6 +252,7 @@ if (isset($_GET['selectionSubmit'])) {
         </div>
         </div>
 
+
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -268,16 +269,17 @@ if (isset($_GET['selectionSubmit'])) {
                             </div>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="button" class="btn btn-primary" name="nestedAggSubmit" href="#collapseNested" role="button" aria-expanded="false" aria-controls="collapseNested" data-bs-toggle="collapse">Search</button> 
+                            <button type="submit" class="btn btn-primary" name="nestedAggSubmit" href="#collapseNested" role="button" aria-expanded="false" aria-controls="collapseNested" data-bs-toggle="collapse">Search</button> 
                         </div> 
-                        <div class="collapse" id="collapseNested">
+                        
+                    </form> 
+                    <!-- <div class="collapse" id="collapseNested">
                             <div class="card card-body">
                                 <?php
                                     handleNestedAggRequest();
-                                ?>
+                                ?>  
                             </div>
-                        </div>
-                    </form>                   
+                        </div>                   -->
                 </div>
             </div>
         </div>

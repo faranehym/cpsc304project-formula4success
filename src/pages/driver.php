@@ -354,13 +354,13 @@ if (isset($_POST['insertSubmit'])) {
                             <button type="submit" onsubmit="return false" class="btn btn-primary" href="#collapseExample" name="partnerSubmit">Search</button> 
                         </div> 
                     </form>  
-                    <div class="collapse" id="collapseExample">
+                    <!-- <div class="collapse" id="collapseExample">
                             <div class="card card-body">
                                 <?php
                                     handlePartnerRequest();
                                 ?>
                             </div>
-                        </div>                 
+                        </div>                  -->
                 </div>
             </div>
         </div>
