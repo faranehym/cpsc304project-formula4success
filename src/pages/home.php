@@ -19,41 +19,6 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 include('main.php');
 include('home.html'); 
-
-
-// dropdown query
-function handleGetTableAttributes() {
-    global $db_conn;
-    $table_name = $_GET['tableName']; 
-
-    $sql_d = "SELECT DISTINCT COLUMN_NAME
-              FROM ALL_TAB_COLUMNS
-              WHERE TABLE_NAME = UPPER('$table_name')"; // problem -> synchronous calls. 
-
-    if (connectToDB()) {
-        echo "<h1>". $table_name ."</h1>"; 
-        $attributes = executePlainSQL($sql_d);
-        printAttributes($attributes);
-    }
-
-    oci_commit($db_conn);
-}
-
-function printAttributes($result) { // formats SQL request to options 
-    while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-        foreach ($row as $value) {  
-            echo "<h1>". $value ."</h1>"; 
-        }
-    }
-}
-
-
-if (isset($_GET['tableName'])) {
-    $selectedTable = $_GET['tableName']
-    // echo "<h1>Selected Table: $selectedTable</h1>";
-    // handleGetTableAttributes($selectedTable); 
-}
-
 ?>
 
 
@@ -96,89 +61,16 @@ if (isset($_GET['tableName'])) {
         </form>
 
         <div id="attributePopUp" class="mt-3 alert alert-danger" style="display: none;">
-        <form>
-            <h6>Select which attributes to view:</h6>
-            <div class="d-inline-flex p-2">
-                <div class="row">
-                    <div class="col">
-                        <div class="form-check">
-                            <input class="form-check-input" name="firstName" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                First name
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" name="lastName" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Last name
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" name="dateOfBirth" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Date of birth
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" name="nationality" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Nationality
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-check">
-                            <input class="form-check-input" name="driverNumber" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Driver number
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" name="employeeId" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Employee ID
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" name="salary" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Salary
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-check">
-                            <input class="form-check-input" name="numberOfWins" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Number of wins
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" name="numberOfPodiums" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Number of podiums
-                            </label>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input" name="numberOfPolePositions" type="checkbox" value="" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Number of pole positions
-                            </label>
-                        </div>
+            <form>
+                <h6>Select which attributes to view:</h6>
+                <div class="d-inline-flex p-2">
+                    <div class="row" id="insertAttributes">
                     </div>
                 </div>
-            </div>
-            <div class="col-12 mt-3 mt-3">
-                    <button type="submit" class="btn btn-primary" name="projectionSubmit">Insert</button> 
-            </div>
-        </form>  
+                <div class="col-12 mt-3 mt-3">
+                        <button type="submit" class="btn btn-primary" name="projectionSubmit">Insert</button> 
+                </div>
+            </form>  
         </div>
     </div>
 
@@ -196,10 +88,11 @@ if (isset($_GET['tableName'])) {
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     // Update the HTML element with the response from the server
-                    document.getElementById("attributePopUp").innerHTML = this.responseText;
+                    console.log(this.responseText); 
+                    document.getElementById("insertAttributes").innerHTML = this.responseText;
                 }
             };
-            xhttp.open("GET", "home.php?tableName=" + selectedOption, true);
+            xhttp.open("GET", "ajax_request.php?action=getTableAttributes&tableName=" + selectedOption, true);
             xhttp.send();
         }
     </script>
