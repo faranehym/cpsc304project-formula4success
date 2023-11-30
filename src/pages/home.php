@@ -34,7 +34,6 @@ function handleProjectionRequest() {
     if (empty($checked_attributes)) {
         echo "not working";
     }
-    ////////////////////
 
     if ($selected_table == "PARTNER") {
         $sql_view = "CREATE VIEW PARTNER AS
@@ -134,7 +133,7 @@ if (isset($_GET['projectionSubmit'])) {
                 <div class="col">
                     <label for="inputState" class="form-label">Select a table to view:</label>
                     <select name="tableName" id="inputState" class="form-select">
-                            <option>Table name...</option>
+                            <option class="dropdown-default">Table name...</option>
                             <option disabled><em>Entities:</em></option>
                             <option value="SPONSOR">Sponsors</option>
                             <option value="CONSTRUCTOR">Constructors</option>
@@ -157,13 +156,13 @@ if (isset($_GET['projectionSubmit'])) {
                 </div>
             </div>        
             <div class="col-12 mt-3">
-                <button type="button" class="btn btn-primary" name="updateSubmit" onclick="toggleAndSubmitForm()">Choose attributes for selected table</button> 
+                <button type="button" class="btn btn-secondary" name="updateSubmit" onclick="toggleAndSubmitForm()">Choose attributes for selected table</button> 
             </div> 
         </form>
 
         <div id="attributePopUp" class="mt-3 alert alert-danger" style="display: none;">
             <form id="attributeForm" method="GET" action="home.php">
-                <h6>Select which attributes to view:</h6>
+                <h6 class="form-instructions">Select which attributes to view:</h6>
                 <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
                 <input type="hidden" id="selectedTable" name="selectedTable" value="">
                 <div class="d-inline-flex p-2">
@@ -174,38 +173,36 @@ if (isset($_GET['projectionSubmit'])) {
                 <div class="col-12 mt-3 mt-3">
                         <!-- button that uses ajax -->
                         <!-- <button type="button" onclick="showProjectionResults()" class="btn btn-primary" name="projectionSubmit">View table</button>  -->
-                        <button type="submit" class="btn btn-primary" name="projectionSubmit">View table</button> 
+                        <button type="submit" class="btn btn-secondary" name="projectionSubmit">View table</button> 
                 </div>
             </form>  
-        </div>
-        
+        </div>        
 
-        <div id="tablePopUp" class="mt-3 alert alert-danger" style="display: none;">
-            
-        </div>
+        <div id="tablePopUp" class="mt-3 alert alert-danger" style="display: none;"></div>
+
 
 
     </div>
 
     <script>
-        function showProjectionResults() {
-            var checkboxes = document.querySelectorAll('#attributeForm input[type="checkbox"]');
-            var checkedAttributes = []; 
-
-            // display the element: 
-            var element = document.getElementById("tablePopUp");
-            element.style.display = "block";
-
-            checkboxes.forEach(function (checkbox) {
-                if(checkbox.checked) {
-                    checkedAttributes.push(checkbox.value); 
-                }
-            })
-
-            document.getElementById('tablePopUp').innerHTML = 'Selected Checkboxes: ' + checkedAttributes.join(', ');
-        }
-
         // only needed if we use ajax 
+        // function showProjectionResults() {
+        //     var checkboxes = document.querySelectorAll('#attributeForm input[type="checkbox"]');
+        //     var checkedAttributes = []; 
+
+        //     // display the element: 
+        //     var element = document.getElementById("tablePopUp");
+        //     element.style.display = "block";
+
+        //     checkboxes.forEach(function (checkbox) {
+        //         if(checkbox.checked) {
+        //             checkedAttributes.push(checkbox.value); 
+        //         }
+        //     })
+
+        //     document.getElementById('tablePopUp').innerHTML = 'Selected Checkboxes: ' + checkedAttributes.join(', ');
+        // }
+
         function toggleAndSubmitForm() {
             var form = document.getElementById("selectTableForm");
             var selectedOption = form.elements["tableName"].value; 

@@ -156,7 +156,7 @@ if (isset($_POST['updateSubmit'])) {
                             </div>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="submit" class="btn btn-primary" name="updateSubmit">Update</button> 
+                            <button type="submit" class="btn btn-secondary" name="updateSubmit">Update</button> 
                         </div> 
                     </form> 
                 </div>
@@ -179,7 +179,7 @@ if (isset($_POST['updateSubmit'])) {
                             </div>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="button" class="btn btn-primary" name="averageSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
+                            <button type="button" class="btn btn-secondary" name="averageSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
                         </div> 
                         <div class="collapse" id="collapseExample">
                             <div class="card card-body">
@@ -209,7 +209,7 @@ if (isset($_POST['updateSubmit'])) {
                             </div>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="button" class="btn btn-primary" name="sumSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
+                            <button type="button" class="btn btn-secondary" name="sumSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
                         </div> 
                         <div class="collapse" id="collapseExample">
                             <div class="card card-body">
@@ -238,7 +238,7 @@ if (isset($_POST['updateSubmit'])) {
                             </div>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="button" class="btn btn-primary" name="driverSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
+                            <button type="button" class="btn btn-secondary" name="driverSubmit" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" data-bs-toggle="collapse">Search</button> 
                         </div> 
                         <div class="collapse" id="collapseExample">
                             <div class="card card-body">

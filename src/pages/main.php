@@ -86,26 +86,36 @@ function printResult($result, $tableName) {
         // Fetch result headers
         $numCols = oci_num_fields($result);
         echo "<br>";
-        echo "<table border='1'><tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
-        echo "<thead><th>" . $tableName . "</th><tr style='background-color: #f2f2f2; border-bottom: 8px solid #dddddd;'>";
+        echo "<div class=\"container-fluid mt-3\">"; 
+        echo "<h4 class=\"table-title\"> Table: ". $tableName ."</h4>"; 
+        // echo "<table class=\"table\" border='1'><thead style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
+        // echo "<thead class=\"table-light\"><th>" . $tableName . "</th><tr style='background-color: #f2f2f2; border-bottom: 8px solid #dddddd;'>";
+        echo "<div class=\"table-responsive\">"; 
+        echo "<table class=\"table table-sm table-bordered table-hover\"><thead class=\"table-light\">";
+
         
         for ($i = 1; $i <= $numCols; $i++) {
             $colName = oci_field_name($result, $i);
-            echo "<th style='padding: 4px; text-align: left; border-right: 1px solid #dddddd;'>{$colName}</th>";
+            echo "<th class=\"table-headings\">{$colName}</th>";
         }
 
-        echo "</tr>";
+        echo "</thead>";
+        echo "<tbody class=\"table-group-divider\">"; 
 
         // Fetch and display rows
         while ($row = oci_fetch_assoc($result)) {
             echo "<tr>";
             foreach ($row as $value) {
-                echo "<td style='padding: 4px; border-right: 1px solid #dddddd;'>{$value}</td>";
+                echo "<td class=\"table-tuples\">{$value}</td>";
             }
             echo "</tr>";
         }
 
+        echo "</tbody>";
+
         echo "</table>";
+        echo "</div>"; 
+        echo "</div>"; 
     } else {
         echo "No results found.";
     }

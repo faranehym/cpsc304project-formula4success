@@ -188,7 +188,7 @@ if (isset($_POST['insertSubmit'])) {
                         </div>
                         <div class="row mt-3">
                         <div class="col-12 mt-3 mt-3">
-                            <button type="submit" class="btn btn-primary" name="insertSubmit">Insert</button> 
+                            <button type="submit" class="btn btn-secondary" name="insertSubmit">Insert</button> 
                         </div>
                         </div> 
                     </form> 
@@ -218,7 +218,7 @@ if (isset($_POST['insertSubmit'])) {
                         </div>
                     </div>
                     <div class="col-12 mt-3">
-                        <button type="submit" class="btn btn-primary" name="deleteSubmit">Delete</button> 
+                        <button type="submit" class="btn btn-secondary" name="deleteSubmit">Delete</button> 
                     </div> 
                  </form> 
             </div>
@@ -242,7 +242,7 @@ if (isset($_POST['insertSubmit'])) {
                             </div>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="submit" onsubmit="return false" class="btn btn-primary" href="#collapseExample" name="partnerSubmit">Search</button> 
+                            <button type="submit" onsubmit="return false" class="btn btn-secondary" href="#collapseExample" name="partnerSubmit">Search</button> 
                         </div> 
                     </form>                  
                 </div>

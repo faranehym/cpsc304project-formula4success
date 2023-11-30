@@ -135,7 +135,7 @@ if (isset($_GET['selectionSubmit'])) {
                 <form method="GET" action="grandprix.php">
                     <input type="hidden" id="selectionQueryRequest" name="selectionQueryRequest">
                     <!-- Filtering combinations -->
-                    <h6 class="mt-3">Select what combination of Grand Prix attributes to filter on:</h6>
+                    <h6 class="mt-3 form-instructions">Select what combination of Grand Prix attributes to filter on:</h6>
                     <br>
                     <div class="row">
                         <div class="col">
@@ -163,7 +163,7 @@ if (isset($_GET['selectionSubmit'])) {
 
 
                     <div class="col-12 mt-3 mt-3">
-                            <button type="submit" class="btn btn-primary" name="selectionSubmit" href="#collapseFilter">Filter</button> 
+                            <button type="submit" class="btn btn-secondary" name="selectionSubmit" href="#collapseFilter">Filter</button> 
                     </div>
                     <div class="collapse" id="collapseFilter">
                         <div class="card card-body">
@@ -194,7 +194,7 @@ if (isset($_GET['selectionSubmit'])) {
                         </div>
                     </div>
                     <div class="col-12 mt-3">
-                        <button type="submit" class="btn btn-primary" name="nestedAggSubmit" href="#collapseNested" role="button" aria-expanded="false" aria-controls="collapseNested" data-bs-toggle="collapse">Search</button> 
+                        <button type="submit" class="btn btn-secondary" name="nestedAggSubmit" href="#collapseNested" role="button" aria-expanded="false" aria-controls="collapseNested" data-bs-toggle="collapse">Search</button> 
                     </div>  
                 </form>    
             </div>
