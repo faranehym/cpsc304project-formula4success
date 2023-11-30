@@ -108,32 +108,116 @@ function connectToDB() {
 }
 
 
-// dropdown query
+// working, separate copy 
+// function handleGetTableAttributesWorking() {
+//     global $db_conn;
+//     $table_name = $_GET['tableName']; 
+//     global $sql_view, $sql_drop, $sql_columns; 
+//     // $sql_view = $sql_drop = $sql_columns = ''; 
+
+//     if ($table_name == "PARTNER") {
+//         $sql_view = "CREATE VIEW COMPLETEPARTNER AS
+//                      SELECT *
+//                      FROM PARTNER_2 NATURAL JOIN PARTNER_REF"; 
+//         $sql_drop = "DROP VIEW COMPLETEPARTNER";
+//         $table_name = 'COMPLETEPARTNER'; 
+
+//         $sql_columns = "SELECT DISTINCT COLUMN_NAME
+//                         FROM ALL_TAB_COLUMNS
+//                         WHERE TABLE_NAME = UPPER('$table_name')";
+        
+//         if (connectToDB()) {
+//             executePlainSQL($sql_view); 
+//             $attributes = executePlainSQL($sql_columns); 
+//             executePlainSQL($sql_drop); 
+//             oci_commit($db_conn); 
+//             printAttributes($attributes);
+//         }
+//     }
+// }
+
 function handleGetTableAttributes() {
     global $db_conn;
+    global $table_name; 
     $table_name = $_GET['tableName']; 
+    global $sql_view, $sql_drop, $sql_columns; 
+    // $sql_view = $sql_drop = $sql_columns = ''; 
 
-    $sql_d = "SELECT DISTINCT COLUMN_NAME
-              FROM ALL_TAB_COLUMNS
-              WHERE TABLE_NAME = UPPER('$table_name')"; // problem -> synchronous calls. 
+    if ($table_name == "PARTNER") {
+        $sql_view = "CREATE VIEW COMPLETEPARTNER AS
+                     SELECT *
+                     FROM PARTNER_2 NATURAL JOIN PARTNER_REF"; 
+        $sql_drop = "DROP VIEW COMPLETEPARTNER";
+        $table_name = 'COMPLETEPARTNER'; 
+        
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($table_name == "CIRCUIT") {
+        $sql_view = "CREATE VIEW COMPLETECIRCUIT AS
+                    SELECT *
+                    FROM CIRCUIT_2 NATURAL JOIN CIRCUIT_REF"; 
+        $sql_drop = "DROP VIEW COMPLETECIRCUIT";
+        $table_name = 'COMPLETECIRCUIT'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($table_name == "GRANDPRIX") {
+        $sql_view = "CREATE VIEW COMPLETEGRANDPRIX AS
+                    SELECT *
+                    FROM GRANDPRIX_REF NATURAL JOIN GRANDPRIX_2 NATURAL JOIN GRANDPRIX_3 NATURAL JOIN GRANDPRIX_4 NATURAL JOIN GRANDPRIX_5"; 
+        $sql_drop = "DROP VIEW COMPLETEGRANDPRIX";
+        $table_name = 'COMPLETEGRANDPRIX'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($table_name == "CONSTRUCTORSTANDING") {
+        $sql_view = "CREATE VIEW COMPLETECONSTRUCTORSTANDING AS
+                    SELECT *
+                    FROM GRANDPRIX_CONSTRUCTORSTANDING_REF NATURAL JOIN GRANDPRIX_CONSTRUCTORSTANDING_2"; 
+        $sql_drop = "DROP VIEW COMPLETECONSTRUCTORSTANDING";
+        $table_name = 'COMPLETECONSTRUCTORSTANDING'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($table_name == "DRIVERSTANDING") {
+        $sql_view = "CREATE VIEW COMPLETEDRIVERSTANDING AS
+                    SELECT *
+                    FROM GRANDPRIX_DRIVERSTANDING_REF NATURAL JOIN GRANDPRIX_DRIVERSTANDING_2"; 
+        $sql_drop = "DROP VIEW COMPLETEDRIVERSTANDING";
+        $table_name = 'COMPLETEDRIVERSTANDING'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } 
+
+    $sql_columns = "SELECT DISTINCT COLUMN_NAME
+                    FROM ALL_TAB_COLUMNS
+                    WHERE TABLE_NAME = UPPER('$table_name')";
 
     if (connectToDB()) {
-        $attributes = executePlainSQL($sql_d);
+        $attributes = executePlainSQL($sql_columns);
+        if (isset($sql_drop)) {
+            executePlainSQL($sql_drop); 
+        }
+        oci_commit($db_conn);
         printAttributes($attributes);
     }
-
-    oci_commit($db_conn);
 }
 
 function printAttributes($result) { // formats SQL request to options 
     while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
         foreach ($row as $value) {
             echo "<div class=\"form-check\">
-            <input class=\"form-check-input\" name=\"firstName\" type=\"checkbox\" value=\"\" id=\"flexCheckDefault\">
-            <label class=\"form-check-label\" for=\"flexCheckDefault\">
-                ". $value ."
-            </label>
-        </div>"; 
+                    <input class=\"form-check-input\" name=\"attributeCheckBoxes[]\" type=\"checkbox\" value=\"". $value ."\" id=\"flexCheckDefault\">
+                    <label class=\"form-check-label\" for=\"flexCheckDefault\">
+                        ". $value ."
+                    </label>
+                </div>"; 
         }
     }
 }

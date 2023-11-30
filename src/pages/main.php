@@ -32,11 +32,9 @@ function debugAlertMessage($message)
 }
 
 function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
-    //echo "<br>running ".$cmdstr."<br>";
     global $db_conn, $success;
 
     $statement = oci_parse($db_conn, $cmdstr);
-    //There are a set of comments at the end of the file that describe some of the OCI specific functions and how they work
 
     if (!$statement) {
         echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
@@ -56,47 +54,10 @@ function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL com
     return $statement;
 }
 
-function executeBoundSQL($cmdstr, $list) {
-/* Sometimes the same statement will be executed several times with different values for the variables involved in the query.
-In this case you don't need to create the statement several times. Bound variables cause a statement to only be
-parsed once and you can reuse the statement. This is also very useful in protecting against SQL injection.
-See the sample code below for how this function is used */
-
-    global $db_conn, $success;
-    $statement = oci_parse($db_conn, $cmdstr);
-
-    if (!$statement) {
-        echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-        $e = OCI_Error($db_conn);
-        echo htmlentities($e['message']);
-        $success = False;
-    }
-
-    foreach ($list as $tuple) {
-        foreach ($tuple as $bind => $val) {
-            //echo $val;
-            //echo "<br>".$bind."<br>";
-            oci_bind_by_name($statement, $bind, $val);
-            unset($val); //make sure you do not remove this. Otherwise $val will remain in an array object wrapper which will not be recognized by Oracle as a proper datatype
-        }
-
-        $r = oci_execute($statement, OCI_DEFAULT);
-        if (!$r) {
-            echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-            $e = OCI_Error($statement); // For oci_execute errors, pass the statementhandle
-            echo htmlentities($e['message']);
-            echo "<br>";
-            $success = False;
-        }
-    }
-}
-
 function connectToDB() {
     global $db_conn;
     global $config;
 
-    // Your username is ora_(CWL_ID) and the password is a(student number). For example,
-    // ora_platypus is the username and a12345678 is the password.
     $db_conn = oci_connect($config["dbuser"], $config["dbpassword"], $config["dbserver"]);
 
     if ($db_conn) {
@@ -117,49 +78,20 @@ function get_header_names($result) {
     return executePlainSQL($sql_h);
 }
 
-// --- OLD VERSION ---
-// function printResult($result, $tableName, $result_header) { //prints results from a select statement
-
-//     // Output data of each row
-//     global $db_conn;
-//     echo "<table border='1'><tr>";
-//     echo "<tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
-//     if (connectToDB()) {
-//         echo "<h1>". $tableName ."</h1>"; 
-//         while ($name = OCI_Fetch_Array($result_header, OCI_ASSOC)) {
-//             foreach ($name as $header) {
-//                 echo "<th style='padding: 8px; text-align: left; border-right: 1px solid #dddddd;'>{$header}</th>";
-//             }
-//         }
-//         while ($row = OCI_Fetch_Array($result, OCI_ASSOC)) {
-//             echo "</tr>";
-//             foreach ($row as $value) {
-//                 echo "<td style='padding: 8px; border-right: 1px solid #dddddd;'>{$value}</td>";
-//             }
-//         echo "</tr>";
-//         } 
-//     echo "</table>";
-//     }
-
-// }
-
-// --- NEW VERSION --
 function printResult($result, $tableName) {
     // Output data of each row
     global $db_conn;
-    echo "<table border='1'><tr>";
-    echo "<tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
-
-    echo "<h1>" . $tableName . "</h1>";
 
     if ($result) {
         // Fetch result headers
         $numCols = oci_num_fields($result);
+        echo "<br>";
         echo "<table border='1'><tr style='background-color: #f2f2f2; border-bottom: 1px solid #dddddd;'>";
-
+        echo "<thead><th>" . $tableName . "</th><tr style='background-color: #f2f2f2; border-bottom: 8px solid #dddddd;'>";
+        
         for ($i = 1; $i <= $numCols; $i++) {
             $colName = oci_field_name($result, $i);
-            echo "<th style='padding: 8px; text-align: left; border-right: 1px solid #dddddd;'>{$colName}</th>";
+            echo "<th style='padding: 4px; text-align: left; border-right: 1px solid #dddddd;'>{$colName}</th>";
         }
 
         echo "</tr>";
@@ -168,7 +100,7 @@ function printResult($result, $tableName) {
         while ($row = oci_fetch_assoc($result)) {
             echo "<tr>";
             foreach ($row as $value) {
-                echo "<td style='padding: 8px; border-right: 1px solid #dddddd;'>{$value}</td>";
+                echo "<td style='padding: 4px; border-right: 1px solid #dddddd;'>{$value}</td>";
             }
             echo "</tr>";
         }
@@ -216,11 +148,6 @@ function handleDriverDisplayRequest($tableName) {
                 FROM Driver d, TeamMember t
                 WHERE d.employeeId = t.employeeId";
         $result = executePlainSQL($sql);
-        //$result_header = get_header_names($result);
-        // $sql_h = "SELECT DISTINCT COLUMN_NAME
-        //             FROM ALL_TAB_COLUMNS
-        //             WHERE TABLE_NAME = UPPER('$result')";
-        // $result_header = executePlainSQL($sql_h);
         printResult($result, $tableName);
     }
 }
@@ -241,7 +168,7 @@ function handleDriverDropdownRequest() {
 function handleGrandPrixDisplayRequest($tableName) {
     global $db_conn;
     if (connectToDB()) {
-        $sql = "SELECT DISTINCT *
+        $sql = "SELECT DISTINCT gpref.circuitName, city, gp2.year, viewership, country, attendance
                 FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
                 WHERE gpref.circuitName = gp2.circuitName AND
                     gpref.circuitName = gp3.circuitName AND
@@ -254,35 +181,80 @@ function handleGrandPrixDisplayRequest($tableName) {
     }
 }
 
-function handleGrandPrixRequest() {
+function handleResetRequest() {
+    global $db_conn;
+    if (connectToDB()) {
+        $sqlFile = 'formula4success.sql';
 
-    // global $db_conn;
-    // global ; 
-    // if (connectToDB()) {
-    //     $sql = ;
-    //     $ = executePlainSQL($sql);
-    //     printResultWithoutTable($); 
-    // }
+        if (file_exists($sqlFile)) {
+            $sql = file_get_contents($sqlFile);
+
+            if ($sql !== false) {
+                // Split the SQL file into individual statements
+                $sqlStatements = explode(';', $sql);
+
+                // Execute each SQL statement
+                foreach ($sqlStatements as $sqlStatement) {
+                    if (!empty(trim($sqlStatement))) {
+                        executePlainSQL($sqlStatement);
+                    }
+                }
+                echo 'Tables reset successfully.';
+            } else {
+                echo 'Error reading SQL file.';
+            }
+        } else {
+            echo 'SQL file not found.';
+        }
+    }
 }
 
-// SELECTION query
+if (isset($_POST['resetSubmit'])) {
+    handleResetRequest();
+}
+// MIGHT NOT NEED THIS
+if (!isset($_SESSION['resetExecuted'])) {
+    // Execute the function
+    handleResetRequest();
 
-// PROJECTION query
-
-// JOIN query 
-
-// Aggregation with GROUP BY query
-
-// Aggregation with HAVING query
-
-// Nested Aggregation with GROUP BY query
-
-// DIVISION query
-
-// The next tag tells the web server to stop parsing the text as PHP. Use the
-// pair of tags wherever the content switches to PHP
+    // Set the flag to indicate that the function has been executed
+    $_SESSION['resetExecuted'] = true;
+}
 
 // front end code
 include('main.html'); 
 
 ?>
+
+<html>
+    <nav class="navbar navbar-expand-lg" style="background-color: #ff1801;">
+        <div class="container-fluid">
+            <a class="navbar-title" href="home.php">FORMULA 4 SUCCESS
+            <h6 class="navbar-subtitle">A Formula 1 Database</h6>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                <a class="nav-link" href="constructor.php">Constructors</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="driver.php">Drivers</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="grandprix.php">Grand Prix</a>
+                </li>
+            </ul>
+            <form class="d-flex" method="POST">
+                <button class="btn btn-outline-success btn-reset" type="submit" name="resetSubmit">Reset Tables</button>
+            </form>
+            </div>
+        </div>
+    </nav>
+    
+
+
+
+</html>

@@ -1,4 +1,4 @@
-<?php
+ <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
 
@@ -19,6 +19,107 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 include('main.php');
 include('home.html'); 
+
+function handleProjectionRequest() {
+    global $db_conn; 
+    global $selected_table; 
+    $selected_table = isset($_GET['selectedTable']) ? $_GET['selectedTable'] : '';
+    $checked_attributes = $_GET['attributeCheckBoxes']; 
+    global $sql_view, $sql_drop, $sql_columns; 
+    
+    if (isset($_GET['selectedTable'])) {
+        $selected_table = $_GET['selectedTable']; 
+    }
+
+    if (empty($checked_attributes)) {
+        echo "not working";
+    }
+    ////////////////////
+
+    if ($selected_table == "PARTNER") {
+        $sql_view = "CREATE VIEW PARTNER AS
+                     SELECT *
+                     FROM PARTNER_2 NATURAL JOIN PARTNER_REF"; 
+        $sql_drop = "DROP VIEW PARTNER";
+        $selected_table = 'PARTNER'; 
+        
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($selected_table == "CIRCUIT") {
+        $sql_view = "CREATE VIEW CIRCUIT AS
+                    SELECT *
+                    FROM CIRCUIT_2 NATURAL JOIN CIRCUIT_REF"; 
+        $sql_drop = "DROP VIEW CIRCUIT";
+        $selected_table = 'CIRCUIT'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($selected_table == "GRANDPRIX") {
+        $sql_view = "CREATE VIEW GRANDPRIX AS
+                    SELECT *
+                    FROM GRANDPRIX_REF NATURAL JOIN GRANDPRIX_2 NATURAL JOIN GRANDPRIX_3 NATURAL JOIN GRANDPRIX_4 NATURAL JOIN GRANDPRIX_5"; 
+        $sql_drop = "DROP VIEW GRANDPRIX";
+        $selected_table = 'GRANDPRIX'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($selected_table == "CONSTRUCTORSTANDING") {
+        $sql_view = "CREATE VIEW CONSTRUCTORSTANDING AS
+                    SELECT *
+                    FROM GRANDPRIX_CONSTRUCTORSTANDING_REF NATURAL JOIN GRANDPRIX_CONSTRUCTORSTANDING_2"; 
+        $sql_drop = "DROP VIEW CONSTRUCTORSTANDING";
+        $selected_table = 'CONSTRUCTORSTANDING'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } else if ($selected_table == "DRIVERSTANDING") {
+        $sql_view = "CREATE VIEW DRIVERSTANDING AS
+                    SELECT *
+                    FROM GRANDPRIX_DRIVERSTANDING_REF NATURAL JOIN GRANDPRIX_DRIVERSTANDING_2"; 
+        $sql_drop = "DROP VIEW DRIVERSTANDING";
+        $selected_table = 'DRIVERSTANDING'; 
+
+        if (connectToDB()) {
+            executePlainSQL($sql_view); 
+        }
+    } 
+
+
+    /////////////////
+    $selectAttributes = implode(', ', $checked_attributes);
+    $sql_projection = "SELECT $selectAttributes FROM $selected_table";
+
+    if (connectToDB()) {
+        $projection_result = executePlainSQL($sql_projection); 
+        if (isset($sql_drop)) {
+            executePlainSQL($sql_drop); 
+        }
+        oci_commit($db_conn);
+        ob_start();
+        printResult($projection_result, $selected_table);
+        $resultOutput = ob_get_clean();
+        echo $resultOutput; 
+    }
+} 
+
+
+
+
+function handleGETRequest() {
+    if (connectToDB()) {
+        if (array_key_exists('projectionQueryRequest', $_GET)) {
+            handleProjectionRequest(); 
+        }
+    }
+}
+
+if (isset($_GET['projectionSubmit'])) {
+    handleGETRequest(); 
+}
 ?>
 
 
@@ -61,20 +162,50 @@ include('home.html');
         </form>
 
         <div id="attributePopUp" class="mt-3 alert alert-danger" style="display: none;">
-            <form>
+            <form id="attributeForm" method="GET" action="home.php">
                 <h6>Select which attributes to view:</h6>
+                <input type="hidden" id="projectionQueryRequest" name="projectionQueryRequest">
+                <input type="hidden" id="selectedTable" name="selectedTable" value="">
                 <div class="d-inline-flex p-2">
                     <div class="row" id="insertAttributes">
+
                     </div>
                 </div>
                 <div class="col-12 mt-3 mt-3">
-                        <button type="submit" class="btn btn-primary" name="projectionSubmit">Insert</button> 
+                        <!-- button that uses ajax -->
+                        <!-- <button type="button" onclick="showProjectionResults()" class="btn btn-primary" name="projectionSubmit">View table</button>  -->
+                        <button type="submit" class="btn btn-primary" name="projectionSubmit">View table</button> 
                 </div>
             </form>  
         </div>
+        
+
+        <div id="tablePopUp" class="mt-3 alert alert-danger" style="display: none;">
+            
+        </div>
+
+
     </div>
 
     <script>
+        function showProjectionResults() {
+            var checkboxes = document.querySelectorAll('#attributeForm input[type="checkbox"]');
+            var checkedAttributes = []; 
+
+            // display the element: 
+            var element = document.getElementById("tablePopUp");
+            element.style.display = "block";
+
+            checkboxes.forEach(function (checkbox) {
+                if(checkbox.checked) {
+                    checkedAttributes.push(checkbox.value); 
+                }
+            })
+
+            document.getElementById('tablePopUp').innerHTML = 'Selected Checkboxes: ' + checkedAttributes.join(', ');
+        }
+
+        // only needed if we use ajax 
         function toggleAndSubmitForm() {
             var form = document.getElementById("selectTableForm");
             var selectedOption = form.elements["tableName"].value; 
@@ -94,6 +225,8 @@ include('home.html');
             };
             xhttp.open("GET", "ajax_request.php?action=getTableAttributes&tableName=" + selectedOption, true);
             xhttp.send();
+
+            document.getElementById("selectedTable").value = selectedOption;
         }
     </script>
 </html>

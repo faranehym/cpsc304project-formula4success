@@ -20,7 +20,6 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
-// getConstructorNames(); 
 include('main.php'); 
 include('constructor.html'); 
 
@@ -36,7 +35,6 @@ function handleUpdateRequest() {
         executePlainSQL("UPDATE Constructor SET  numberOfWins='" . $new_points . "' WHERE constructorName='" . $constructor_name . "'");
         oci_commit($db_conn);
     }
-    // you need the wrap the old name and new name values with single quotations
 }
 
 function handleAverageRequest() {
