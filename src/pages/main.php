@@ -1,17 +1,20 @@
-
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // The following 3 lines allow PHP errors to be displayed along with the page
 // content. Delete or comment out this block when it's no longer needed.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // Database access configuration
-$config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+// $config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
+// $config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+$config["dbuser"] = "ora_faranehm";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60431905";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -22,6 +25,7 @@ $constructor_names = NULL;
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
 // start PHP script
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 function debugAlertMessage($message)
 {
     global $show_debug_alert_messages;
@@ -31,6 +35,7 @@ function debugAlertMessage($message)
     }
 }
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
     global $db_conn, $success;
 
@@ -54,6 +59,7 @@ function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL com
     return $statement;
 }
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 function connectToDB() {
     global $db_conn;
     global $config;
@@ -178,7 +184,7 @@ function handleDriverDropdownRequest() {
 function handleGrandPrixDisplayRequest($tableName) {
     global $db_conn;
     if (connectToDB()) {
-        $sql = "SELECT DISTINCT gpref.circuitName, city, gp2.year, viewership, country, attendance
+        $sql = "SELECT DISTINCT gpName, gpref.circuitName, city, gp2.year, viewership, country, attendance
                 FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
                 WHERE gpref.circuitName = gp2.circuitName AND
                     gpref.circuitName = gp3.circuitName AND
@@ -232,12 +238,14 @@ if (isset($_POST['resetSubmit'])) {
     handlePOSTRequestReset();
 }
 
+//$result = $_GET['image'];
+
 // front end code
 include('main.html'); 
 
 ?>
-
 <html>
+<!-- <img src="images/toto_fingies.JPEG" alt="Description of the image"> -->
     <nav class="navbar navbar-expand-lg" style="background-color: #ff1801;">
         <div class="container-fluid">
             <a class="navbar-title" href="home.php">FORMULA 4 SUCCESS

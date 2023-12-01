@@ -1,18 +1,20 @@
-
-
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // The following 3 lines allow PHP errors to be displayed along with the page
 // content. Delete or comment out this block when it's no longer needed.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // Database access configuration
-$config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+// $config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
+// $config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+$config["dbuser"] = "ora_faranehm";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60431905";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -25,15 +27,28 @@ include('constructor.html');
 
 function handleUpdateRequest() {
     global $db_conn;  
-    
-    $constructor_name = $_POST['constructorName'];
-    $new_points = $_POST['newPoints'];
-
-    if ($new_points == NULL) {
-        echo "Error: Points value cannot be empty.";
+    if (!isset($_POST['constructorName'])) {
+        echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                Error: Constructor value cannot be empty!
+            </div>"; 
+    } else if (!isset($_POST['newPoints']) || $_POST['newPoints'] === null) {
+        echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                Error: Points value cannot be empty!
+            </div>"; 
     } else {
-        executePlainSQL("UPDATE Constructor SET  numberOfWins='" . $new_points . "' WHERE constructorName='" . $constructor_name . "'");
-        oci_commit($db_conn);
+        $constructor_name = $_POST['constructorName'];
+        $new_points = $_POST['newPoints'];
+        if ($new_points === '') {
+            echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                    Error: Points value cannot be empty!
+                </div>"; 
+        } else {
+            executePlainSQL("UPDATE Constructor SET  numberOfWins='" . $new_points . "' WHERE constructorName='" . $constructor_name . "'");
+            oci_commit($db_conn);
+            echo "<div class=\"container-fluid alert alert-success mt-3\" role=\"alert\">
+                    Success: Constructor wins updated!
+                </div>";
+        }
     }
 }
 
@@ -59,7 +74,8 @@ function handleEngineRequest() {
             
     $sql2 = "select engine, SUM(numberOfWins)
             from constructorCarInfo
-            group by engine";
+            group by engine
+            having SUM(numberOfWins) > 5";
     
     $sql3 = "DROP VIEW constructorCarInfo";
     $result1 = executePlainSQL($sql);
@@ -144,7 +160,7 @@ if (isset($_POST['updateSubmit'])) {
                             <div class="col">
                                 <label for="inputState" class="form-label">Choose the Constructor</label>
                                 <select name="constructorName" id="inputState" class="form-select">
-                                    <option selected>Constructor name...</option>
+                                    <option value="" disabled selected>Constructor name...</option>
                                         <?php
                                             handleConstructorDropdownRequest(); 
                                         ?>

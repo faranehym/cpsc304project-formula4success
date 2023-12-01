@@ -1,18 +1,20 @@
-
-
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // The following 3 lines allow PHP errors to be displayed along with the page
 // content. Delete or comment out this block when it's no longer needed.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // Database access configuration
-$config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+// $config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
+// $config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+$config["dbuser"] = "ora_faranehm";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60431905";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -32,54 +34,69 @@ function handleSelectionRequest() {
     $input2 = $_GET["input2"];
     $filter_combo = $_GET["filterCombo"];
 
-    if ($filter_combo!="1" && $filter_combo!="2" && $filter_combo!="3" && $filter_combo!="4") {
-        echo "Error: Please select a filter combination or input valid filter values.";
-    } else {
-        if ($filter_combo=="1") {
-            $sql = "SELECT DISTINCT gpref.circuitName, city, gp2.year, viewership, country, attendance
-                    FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
-                    WHERE gpref.circuitName = gp2.circuitName AND
-                        gpref.circuitName = gp3.circuitName AND
-                        gp2.circuitName = gp4.circuitName AND
-                        gp2.year = gp4.year AND
-                        gp2.circuitName = gp5.circuitName AND
-                        gp2.year = gp5.year AND
-                        gp5.year = '$input1' AND
-                        gp5.gpName = '$input2'";
-        } else if ($filter_combo=="2") {
-            $sql = "SELECT DISTINCT gpref.circuitName, city, gp2.year, viewership, country, attendance
-                    FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
-                    WHERE gpref.circuitName = gp2.circuitName AND
-                        gpref.circuitName = gp3.circuitName AND
-                        gp2.circuitName = gp4.circuitName AND
-                        gp2.year = gp4.year AND
-                        gp2.circuitName = gp5.circuitName AND
-                        gp2.year = gp5.year AND
-                        gp5.year = '$input1' AND
-                        gp3.country = '$input2'";
-        } else if ($filter_combo=="3") {
-            $sql = "SELECT DISTINCT gpref.circuitName, city, gp2.year, viewership, country, attendance
-                    FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
-                    WHERE gpref.circuitName = gp2.circuitName AND
-                        gpref.circuitName = gp3.circuitName AND
-                        gp2.circuitName = gp4.circuitName AND
-                        gp2.year = gp4.year AND
-                        gp2.circuitName = gp5.circuitName AND
-                        gp2.year = gp5.year AND
-                        gp5.year = '$input1' AND
-                        gp5.circuitName = '$input2'";
-        } else if ($filter_combo=="4") {
-            $sql = "SELECT DISTINCT gpref.circuitName, city, gp2.year, viewership, country, attendance
-                    FROM GrandPrix_5
-                    JOIN GrandPrix_4 USING (year, circuitName)
-                    JOIN GrandPrix_3 USING (circuitName)
-                    JOIN GrandPrix_Ref USING (circuitName)
-                    WHERE gpName = '$input1' OR circuitName = '$input2'";
+    //// sanitization: 
+
+    if (preg_match('/^[a-zA-Z0-9\s]*$/', $input1) && preg_match('/^[a-zA-Z0-9\s]*$/', $input2)) {
+        $sanitizedInput1 = htmlspecialchars($input1, ENT_QUOTES, 'UTF-8');
+        $sanitizedInput2 = htmlspecialchars($input2, ENT_QUOTES, 'UTF-8');
+
+        if ($filter_combo!="1" && $filter_combo!="2" && $filter_combo!="3" && $filter_combo!="4") {
+            echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+            Error: Please select a filter combination or input valid filter values!
+                </div>";
+        } else {
+            if ($filter_combo=="1") {
+                $sql = "SELECT DISTINCT gpName, gpref.circuitName, city, gp2.year, viewership, country, attendance
+                        FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
+                        WHERE gpref.circuitName = gp2.circuitName AND
+                            gpref.circuitName = gp3.circuitName AND
+                            gp2.circuitName = gp4.circuitName AND
+                            gp2.year = gp4.year AND
+                            gp2.circuitName = gp5.circuitName AND
+                            gp2.year = gp5.year AND
+                            gp5.year = '$sanitizedInput1' AND
+                            gp5.gpName = '$sanitizedInput2'";
+            } else if ($filter_combo=="2") {
+                $sql = "SELECT DISTINCT gpName, gpref.circuitName, city, gp2.year, viewership, country, attendance
+                        FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
+                        WHERE gpref.circuitName = gp2.circuitName AND
+                            gpref.circuitName = gp3.circuitName AND
+                            gp2.circuitName = gp4.circuitName AND
+                            gp2.year = gp4.year AND
+                            gp2.circuitName = gp5.circuitName AND
+                            gp2.year = gp5.year AND
+                            gp5.year = '$sanitizedInput1' AND
+                            gp3.country = '$sanitizedInput2'";
+            } else if ($filter_combo=="3") {
+                $sql = "SELECT DISTINCT gpName, gpref.circuitName, city, gp2.year, viewership, country, attendance
+                        FROM GrandPrix_Ref gpref, GrandPrix_2 gp2, GrandPrix_3 gp3, GrandPrix_4 gp4, GrandPrix_5 gp5
+                        WHERE gpref.circuitName = gp2.circuitName AND
+                            gpref.circuitName = gp3.circuitName AND
+                            gp2.circuitName = gp4.circuitName AND
+                            gp2.year = gp4.year AND
+                            gp2.circuitName = gp5.circuitName AND
+                            gp2.year = gp5.year AND
+                            gp5.year = '$sanitizedInput1' AND
+                            gp5.circuitName = '$sanitizedInput2'";
+            } else if ($filter_combo=="4") {
+                $sql = "SELECT DISTINCT gpName, circuitName, city, year, viewership, country, attendance
+                        FROM GrandPrix_5
+                        JOIN GrandPrix_4 USING (year, circuitName)
+                        JOIN GrandPrix_2 USING (year, circuitName)
+                        JOIN GrandPrix_3 USING (circuitName)
+                        JOIN GrandPrix_Ref USING (circuitName)
+                        WHERE year = '$sanitizedInput1' OR city = '$sanitizedInput2'";
+            }
+            $result = executePlainSQL($sql);
+            oci_commit($db_conn);
+            printResult($result, "Grand Prix");
         }
-        $result = executePlainSQL($sql);
-        oci_commit($db_conn);
-        printResult($result, "Grand Prix");
+    } else {
+        echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                Error: Invalid input, please enter alphanumeric characters only!
+            </div>";
     }
+
 }
 
 function handleNestedAggRequest() {
@@ -91,9 +108,8 @@ function handleNestedAggRequest() {
                 c2.circuitName = gpref.circuitName AND
                 gpref.circuitName = gp2.circuitName AND
                 gp2.circuitName = gp4.circuitName AND
-                gp2.year = gp4.year AND cref.numberOfLaps IN (SELECT cref2.numberOfLaps
-                                                            FROM Circuit_Ref cref2
-                                                            WHERE cref2.length > 300)
+                gp2.year = gp4.year AND cref.numberOfLaps > (SELECT MIN(cref2.numberOfLaps)
+                                                            FROM Circuit_Ref cref2)
             GROUP BY c2.type";
     
     $result = executePlainSQL($sql);
@@ -123,11 +139,10 @@ if (isset($_GET['selectionSubmit'])) {
 <html>
     <div class="accordion mt-3" id="accordionExample">
         
-        <!-- SELECTION ACCORDION ITEM -->
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-            Filter Grand Prix (Selection)
+            Filter Grand Prix
             </button>
         </h2>
         <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
@@ -145,7 +160,7 @@ if (isset($_GET['selectionSubmit'])) {
                                 <option value="1">Filter 1: Year AND Filter 2: Grand Prix Name</option>
                                 <option value="2">Filter 1: Year AND Filter 2: Country</option>
                                 <option value="3">Filter 1: Year AND Filter 2: Circuit Name</option>
-                                <option value="4">Filter 1: Grand Prix Name OR Filter 2: Circuit Name</option>
+                                <option value="4">Filter 1: Year OR Filter 2: City</option>
                             </select>
                         </div>
                     </div>
@@ -153,7 +168,7 @@ if (isset($_GET['selectionSubmit'])) {
                     <div class="row">
                         <div class="col">
                             <label for="input1" class="form-label">Filter 1</label>
-                            <input type="text" class="form-control" name="input1" id="input1" placeholder="">
+                            <input type="number" class="form-control" name="input1" id="input1" placeholder="">
                         </div>
                         <div class="col">
                             <label for="input2" class="form-label">Filter 2</label>
@@ -190,7 +205,7 @@ if (isset($_GET['selectionSubmit'])) {
                     <input type="hidden" id="nestedAggRequest" name="nestedAggRequest">
                     <div class="row">
                         <div class="col">
-                            <label for="inputState" class="form-label">For each circuit type, find the average number of people in attendance at Grand Prixs with that type of circuit. Only include Grand Prixs where the circuit length is greater than 300 km.</label>
+                            <label for="inputState" class="form-label">For each circuit type, find the average number of people in attendance at Grand Prixs with that type of circuit, excluding circuits with the least amount of laps.</label>
                         </div>
                     </div>
                     <div class="col-12 mt-3">
@@ -200,8 +215,6 @@ if (isset($_GET['selectionSubmit'])) {
             </div>
         </div>
     
-
-    <!-- currently only works if another submit request is executed -->
     <div class="d-flex justify-content-center">
         <?php
         

@@ -2,15 +2,19 @@
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // The following 3 lines allow PHP errors to be displayed along with the page
 // content. Delete or comment out this block when it's no longer needed.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // Database access configuration
-$config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+// $config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
+// $config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+$config["dbuser"] = "ora_faranehm";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60431905";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -18,6 +22,7 @@ $success = true;	// keep track of errors so page redirects only if there are no 
 
 $show_debug_alert_messages = False; // show which methods are being triggered (see debugAlertMessage())
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // start PHP script
 function debugAlertMessage($message)
 {
@@ -28,6 +33,7 @@ function debugAlertMessage($message)
     }
 }
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
     //echo "<br>running ".$cmdstr."<br>";
     global $db_conn, $success;
@@ -53,6 +59,7 @@ function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL com
     return $statement;
 }
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 function executeBoundSQL($cmdstr, $list) {
 /* Sometimes the same statement will be executed several times with different values for the variables involved in the query.
 In this case you don't need to create the statement several times. Bound variables cause a statement to only be
@@ -88,6 +95,7 @@ See the sample code below for how this function is used */
     }
 }
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 function connectToDB() {
     global $db_conn;
     global $config;
@@ -107,41 +115,11 @@ function connectToDB() {
     }
 }
 
-
-// working, separate copy 
-// function handleGetTableAttributesWorking() {
-//     global $db_conn;
-//     $table_name = $_GET['tableName']; 
-//     global $sql_view, $sql_drop, $sql_columns; 
-//     // $sql_view = $sql_drop = $sql_columns = ''; 
-
-//     if ($table_name == "PARTNER") {
-//         $sql_view = "CREATE VIEW COMPLETEPARTNER AS
-//                      SELECT *
-//                      FROM PARTNER_2 NATURAL JOIN PARTNER_REF"; 
-//         $sql_drop = "DROP VIEW COMPLETEPARTNER";
-//         $table_name = 'COMPLETEPARTNER'; 
-
-//         $sql_columns = "SELECT DISTINCT COLUMN_NAME
-//                         FROM ALL_TAB_COLUMNS
-//                         WHERE TABLE_NAME = UPPER('$table_name')";
-        
-//         if (connectToDB()) {
-//             executePlainSQL($sql_view); 
-//             $attributes = executePlainSQL($sql_columns); 
-//             executePlainSQL($sql_drop); 
-//             oci_commit($db_conn); 
-//             printAttributes($attributes);
-//         }
-//     }
-// }
-
 function handleGetTableAttributes() {
     global $db_conn;
     global $table_name; 
     $table_name = $_GET['tableName']; 
     global $sql_view, $sql_drop, $sql_columns; 
-    // $sql_view = $sql_drop = $sql_columns = ''; 
 
     if ($table_name == "PARTNER") {
         $sql_view = "CREATE VIEW COMPLETEPARTNER AS

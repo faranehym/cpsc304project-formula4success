@@ -1,18 +1,20 @@
-
-
 <?php
 // The preceding tag tells the web server to parse the following text as PHP
 // rather than HTML (the default)
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // The following 3 lines allow PHP errors to be displayed along with the page
 // content. Delete or comment out this block when it's no longer needed.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// SOURCE: from CPSC 304 23W Tutorial 6 Starter Code
 // Database access configuration
-$config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
-$config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+// $config["dbuser"] = "ora_kellyz02";			// change "cwl" to your own CWL
+// $config["dbpassword"] = "a46990602";	// change to 'a' + your student number
+$config["dbuser"] = "ora_faranehm";			// change "cwl" to your own CWL
+$config["dbpassword"] = "a60431905";	// change to 'a' + your student number
 $config["dbserver"] = "dbhost.students.cs.ubc.ca:1522/stu";
 $db_conn = NULL;	// login credentials are used in connectToDB()
 
@@ -40,35 +42,67 @@ function handleInsertRequest() {
     $poles = $_POST['numberOfPolePositions'];
     $id = $_POST['employeeId'];
 
-    $any_empty = false;
-    foreach ([$first_name, $last_name, $dob, $nationality, $salary, $job, $num, $wins, $podiums, $poles, $id] as $feature) {
-        if (!isset($feature) || $feature === "") {
-            $any_empty = true;
-        }
-    }
-    if ($any_empty) {
-        echo "Error: Please input valid values for each driver features.";
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dob)) {
+        echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                    Error: Please input a valid date!
+                </div>";
     } else {
-        $check_id = executePlainSQL("SELECT COUNT(*) AS count
-                                FROM TeamMember
-                                WHERE employeeId = '$id'");
-
-        $row = OCI_Fetch_Array($check_id, OCI_BOTH);
-        $id_count = $row[0];
-
-        if ($id_count != 0) {
-            echo "Error: Employee ID already exists.";
+        if (preg_match('/^[a-zA-Z0-9\s]*$/', $first_name) && preg_match('/^[a-zA-Z0-9\s]*$/', $last_name) && preg_match('/^[a-zA-Z0-9\s]*$/', $nationality)) {
+            $sanitizedFirstName = htmlspecialchars($first_name, ENT_QUOTES, 'UTF-8');
+            $sanitizedLastName = htmlspecialchars($last_name, ENT_QUOTES, 'UTF-8');
+            $sanitizedNationality = htmlspecialchars($nationality, ENT_QUOTES, 'UTF-8');
+    
+            $any_empty = false;
+            foreach ([$sanitizedFirstName, $sanitizedLastName, $dob, $sanitizedNationality, $salary, $job, $num, $wins, $podiums, $poles, $id] as $feature) {
+                if (!isset($feature) || $feature === "") {
+                    $any_empty = true;
+                }
+            }
+            if ($any_empty) {
+                echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                        Error: Please input valid values for all driver attributes!
+                    </div>";
+            } else {
+                $check_id = executePlainSQL("SELECT COUNT(*) AS count
+                                        FROM TeamMember
+                                        WHERE employeeId = '$id'");
+        
+                $row = OCI_Fetch_Array($check_id, OCI_BOTH);
+                $id_count = $row[0];
+        
+                if ($id_count != 0) {
+                    echo "<div class=\"container-fluid alert alert-success mt-3\" role=\"alert\">
+                        Error: Employee ID already exists!
+                    </div>";
+                } else {
+                    $sql_tm = "INSERT INTO TeamMember (employeeId, firstName, lastName, nationality, 
+                        dateOfBirth, salary, job) values ('$id', '$sanitizedFirstName', '$sanitizedLastName', '$sanitizedNationality', 
+                        to_date('$dob', 'YYYY-MM-DD'), '$salary', '$job')";
+                    $sql_d = "INSERT INTO Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, 
+                        numberOfPolePositions) values ('$id', '$podiums', '$wins', '$num', '$poles')";
+                    $insertResult = executePlainSQL($sql_tm);
+                    executePlainSQL($sql_d);
+                    $error = oci_error($insertResult);
+                    if ($error) {
+                        echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                                Error: {$error['message']}
+                            </div>";
+                    } else {
+                        oci_commit($db_conn);
+                        echo "<div class=\"container-fluid alert alert-success mt-3\" role=\"alert\">
+                            Success: Driver inserted!
+                        </div>";
+                    }
+                }
+            }
         } else {
-            $sql_tm = "INSERT INTO TeamMember (employeeId, firstName, lastName, nationality, 
-                dateOfBirth, salary, job) values ('$id', '$first_name', '$last_name', '$nationality', 
-                to_date('$dob', 'YYYY-MM-DD'), '$salary', '$job')";
-            $sql_d = "INSERT INTO Driver (employeeId, numberOfPodiums, numberOfWins, driverNumber, 
-                numberOfPolePositions) values ('$id', '$podiums', '$wins', '$num', '$poles')";
-            executePlainSQL($sql_tm);
-            executePlainSQL($sql_d);
-            oci_commit($db_conn);
+            echo "<div class=\"container-fluid alert alert-danger mt-3\" role=\"alert\">
+                    Error: Invalid input, please enter alphanumeric characters only!
+                </div>";
         }
     }
+
+    
 }
 
 function handlePartnerRequest() {
@@ -110,6 +144,9 @@ function handleDeleteRequest() {
     $sql_t = "DELETE FROM TeamMember WHERE employeeId = '$id'"; 
     executePlainSQL($sql_t);
     oci_commit($db_conn);
+    echo "<div class=\"container-fluid alert alert-success mt-3\" role=\"alert\">
+                Success: Driver deleted!
+            </div>";
 
 }
 
@@ -156,7 +193,7 @@ if (isset($_POST['insertSubmit'])) {
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-4 mt-3">
-                                <input name="dateOfBirth" type="text" class="form-control" placeholder="Date Of Birth (YYYY-MM-DD)" aria-label="Date of Birth">
+                                <input name="dateOfBirth" type="text" class="form-control datepicker" placeholder="Date Of Birth (YYYY-MM-DD)" aria-label="Date of Birth">
                             </div>
                             <div class="col-md-3 mt-3">
                                 <input name="nationality" type="text" class="form-control" placeholder="Nationality" aria-label="Nationality">
