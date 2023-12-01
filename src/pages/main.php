@@ -209,6 +209,7 @@ function handleResetRequest() {
                         executePlainSQL($sqlStatement);
                     }
                 }
+                oci_commit($db_conn);
                 echo 'Tables reset successfully.';
             } else {
                 echo 'Error reading SQL file.';
@@ -219,16 +220,16 @@ function handleResetRequest() {
     }
 }
 
-if (isset($_POST['resetSubmit'])) {
-    handleResetRequest();
+function handlePOSTRequestReset() {
+    if (connectToDB()) {
+        if (array_key_exists('resetSubmit', $_POST)) {
+            handleResetRequest();
+        }    
+    }
 }
-// MIGHT NOT NEED THIS
-if (!isset($_SESSION['resetExecuted'])) {
-    // Execute the function
-    handleResetRequest();
 
-    // Set the flag to indicate that the function has been executed
-    $_SESSION['resetExecuted'] = true;
+if (isset($_POST['resetSubmit'])) {
+    handlePOSTRequestReset();
 }
 
 // front end code
