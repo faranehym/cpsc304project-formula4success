@@ -6,5 +6,5 @@ The domain of our application is sports data management. More specifically, our 
 
 
 ### Quick video demo of our application: 
-https://media.github.students.cs.ubc.ca/user/13948/files/d15f4e92-5276-4026-ba3a-b353498683b4
+https://github.com/kellyz02/cpsc304project-formula4success/assets/108567735/3fc18b99-bc7c-404a-b346-6b51d8bf8397
 
