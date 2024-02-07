@@ -7,4 +7,4 @@ The domain of our application is sports data management. More specifically, our 
 
 ### Quick video demo of our application: 
 https://github.com/kellyz02/cpsc304project-formula4success/assets/108567735/3fc18b99-bc7c-404a-b346-6b51d8bf8397
-
+ 
